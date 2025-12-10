@@ -1,8 +1,8 @@
 import "./reset.css"
 
 export const metadata = {
-  title: "Page title",
-  description: "Page description",
+  title: "公共賃貸住宅維持管理",
+  description: "公共賃貸住宅維持管理用WEBアプリケーション",
 }
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
@@ -23,7 +23,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
               margin: 0,
             }}
           >
-            Page title
+            公共賃貸住宅維持管理
           </h1>
         </header>
         <main
@@ -43,7 +43,10 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             padding: "1rem",
           }}
         >
-          <p>&copy; My organization</p>
+          <p>
+            国立研究開発法人 建築研究所, BUILDING RESEARCH INSTITUTE &copy; BRI
+            All Rights Reserved
+          </p>
         </footer>
       </body>
     </html>
