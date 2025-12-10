@@ -28,7 +28,11 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         </header>
         <main
           style={{
+            alignItems: "center",
             background: "#f0f0f0",
+            display: "flex",
+            flexFlow: "column",
+            justifyContent: "center",
             minHeight: "calc(100dvh - 5.625rem)",
             padding: "1rem",
           }}
