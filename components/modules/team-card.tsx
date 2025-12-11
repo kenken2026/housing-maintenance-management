@@ -1,11 +1,17 @@
 import { FC } from "react"
 
-export const TeamCard: FC<{ team: { name: string } }> = ({ team }) => {
+export const TeamCard: FC<{
+  team: { id: number; name: string }
+  isChecked?: boolean
+  onCheck?: () => void
+}> = ({ team, isChecked, onCheck }) => {
   return (
     <div
+      aria-hidden="true"
       style={{
         alignItems: "center",
-        border: "solid #ddd 1px",
+        border: "solid 1px",
+        borderColor: isChecked ? "#999" : "#ddd",
         borderRadius: ".25rem",
         display: "flex",
         flexDirection: "column",
@@ -14,6 +20,7 @@ export const TeamCard: FC<{ team: { name: string } }> = ({ team }) => {
         padding: "1rem 0",
         width: "8rem",
       }}
+      onClick={() => onCheck?.()}
     >
       <div
         style={{
