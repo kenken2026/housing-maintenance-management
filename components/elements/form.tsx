@@ -44,18 +44,23 @@ export const Input: FC<ComponentProps<"input">> = ({ style, ...props }) => (
   />
 )
 
-export const Button: FC<ComponentProps<"button">> = ({ style, ...props }) => (
+export const Button: FC<ComponentProps<"button">> = ({
+  disabled,
+  style,
+  ...props
+}) => (
   <button
     style={{
       background: "#e9e9e9",
       border: 0,
       borderRadius: "2rem",
-      color: "#444",
+      color: disabled ? "#ccc" : "#444",
       fontSize: "1rem",
       fontWeight: "bold",
       padding: ".5rem 1rem",
       ...style,
     }}
+    disabled={disabled}
     {...props}
   />
 )

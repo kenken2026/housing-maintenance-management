@@ -59,7 +59,13 @@ export const SiginIn: FC = () => {
             }
           />
           <div />
-          <Button>ログイン</Button>
+          <Button
+            disabled={
+              !formInput.teamId || !formInput.name || !formInput.password
+            }
+          >
+            ログイン
+          </Button>
         </Form>
       </Card>
     </>
