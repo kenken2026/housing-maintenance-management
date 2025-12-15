@@ -8,6 +8,7 @@ const MultiMarkerMap = dynamic(
   { ssr: false }
 )
 import dynamic from "next/dynamic"
+import Link from "next/link"
 
 const houses: House[] = [
   {
@@ -39,7 +40,9 @@ export const HouseList: FC<{ team: Team }> = ({ team }) => {
           <tbody>
             {houses.map((house) => (
               <tr key={house.id}>
-                <td>{house.name}</td>
+                <td>
+                  <Link href={`/house?id=${house.id}`}>{house.name}</Link>
+                </td>
                 <td>{house.createdAt.toLocaleDateString()}</td>
               </tr>
             ))}
