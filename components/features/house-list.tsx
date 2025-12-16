@@ -9,6 +9,7 @@ const MultiMarkerMap = dynamic(
 )
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 const houses: House[] = [
   {
@@ -28,12 +29,13 @@ const houses: House[] = [
 ]
 
 export const HouseList: FC<{ team: Team }> = ({ team }) => {
+  const router = useRouter()
   return (
     <>
       <Card>
         <h2>{team.name}</h2>
         <div>
-          <Button>新規作成</Button>
+          <Button onClick={() => router.push("/house/new")}>新規作成</Button>
         </div>
         <MultiMarkerMap markers={houses} />
         <table>

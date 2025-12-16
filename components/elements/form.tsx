@@ -20,6 +20,9 @@ export const Label: FC<ComponentProps<"label">> = ({
 }) => (
   <label
     style={{
+      fontSize: ".75rem",
+      fontWeight: "bold",
+      marginBottom: "-0.5rem",
       ...style,
     }}
     {...props}
@@ -46,20 +49,22 @@ export const Input: FC<ComponentProps<"input">> = ({ style, ...props }) => (
 
 export const Button: FC<ComponentProps<"button">> = ({
   disabled,
+  type,
   style,
   ...props
 }) => (
   <button
     style={{
-      background: "#e9e9e9",
+      background: disabled || type == "button" ? "#e9e9e9" : "#555",
       border: 0,
       borderRadius: "2rem",
-      color: disabled ? "#ccc" : "#444",
+      color: type == "button" ? "#444" : disabled ? "#ccc" : "#e9e9e9",
       fontSize: "1rem",
       fontWeight: "bold",
       padding: ".5rem 1rem",
       ...style,
     }}
+    type={type}
     disabled={disabled}
     {...props}
   />

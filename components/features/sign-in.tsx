@@ -22,6 +22,7 @@ export const SiginIn: FC = () => {
     e.preventDefault()
     setTeam(teams.find((t) => t.id == formInput.teamId))
   }
+  const isValid = !!formInput.teamId && !!formInput.name && !!formInput.password
   return (
     <>
       <Card style={{ maxWidth: "32rem" }}>
@@ -62,13 +63,7 @@ export const SiginIn: FC = () => {
             }
           />
           <div />
-          <Button
-            disabled={
-              !formInput.teamId || !formInput.name || !formInput.password
-            }
-          >
-            ログイン
-          </Button>
+          <Button disabled={!isValid}>ログイン</Button>
         </Form>
       </Card>
     </>
