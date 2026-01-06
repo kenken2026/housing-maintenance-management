@@ -1,28 +1,48 @@
 "use client"
 
-import { useState, type FC, type FormEvent } from "react"
+import { useEffect, useState, type FC, type FormEvent } from "react"
 import { Card } from "components/elements"
 import { Button, Form, Input } from "components/elements/form"
 import { TeamCard } from "components/modules/team-card"
 import { useTeamState } from "lib/store"
-
-const teams: Team[] = [
-  { id: 1, name: "東京住居" },
-  { id: 2, name: "千代田区住宅管理" },
-]
+import { teamModel } from "lib/models"
+import { Modal } from "components/elements/modal"
 
 export const SiginIn: FC = () => {
   const [formInput, setFormInput] = useState<{
     teamId?: number
-    name?: string
-    password?: string
   }>({})
+  const [isOpenNewTeamModal, setIsOpenNewTeamModal] = useState<boolean>(false)
+  const [newTeamInput, setNewTeamInput] = useState<{
+    name: string
+  }>({ name: "" })
   const { setTeam } = useTeamState()
+  const [teams, setTeams] = useState<Team[]>([])
+  const fetchTeams = async () => {
+    const teams = await teamModel().index()
+
+    setTeams(teams)
+  }
+
+  useEffect(() => {
+    const loadTeams = async () => {
+      await fetchTeams()
+    }
+    loadTeams()
+  }, [])
+
   const handleSignIn = (e: FormEvent) => {
     e.preventDefault()
     setTeam(teams.find((t) => t.id == formInput.teamId))
   }
-  const isValid = !!formInput.teamId && !!formInput.name && !!formInput.password
+  const handleNewTeamSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    await teamModel().create({ ...newTeamInput })
+    await fetchTeams()
+    setIsOpenNewTeamModal(false)
+    setNewTeamInput({ name: "" })
+  }
+  const isValid = !!formInput.teamId
   return (
     <>
       <Card style={{ maxWidth: "32rem" }}>
@@ -45,27 +65,39 @@ export const SiginIn: FC = () => {
               />
             ))}
           </div>
-          <Input
-            placeholder="ユーザーネーム"
-            required
-            value={formInput.name ?? ""}
-            onChange={({ target: { value } }) =>
-              setFormInput({ ...formInput, name: value })
-            }
-          />
-          <Input
-            placeholder="パスワード"
-            type="password"
-            required
-            value={formInput.password ?? ""}
-            onChange={({ target: { value } }) =>
-              setFormInput({ ...formInput, password: value })
-            }
-          />
-          <div />
           <Button disabled={!isValid}>ログイン</Button>
         </Form>
+        <div
+          style={{
+            background: "#e9e9e9",
+            height: ".125rem",
+            margin: ".5rem",
+          }}
+        />
+        <Button type="button" onClick={() => setIsOpenNewTeamModal(true)}>
+          新しいチームを作成
+        </Button>
       </Card>
+      <Modal
+        isOpen={isOpenNewTeamModal}
+        onClose={() => setIsOpenNewTeamModal(false)}
+      >
+        <h2>新しいチーム</h2>
+        <br />
+        <Form onSubmit={handleNewTeamSubmit}>
+          <Input
+            placeholder="チーム名"
+            required
+            value={newTeamInput.name}
+            onChange={({ target: { value } }) =>
+              setNewTeamInput({ ...newTeamInput, name: value })
+            }
+          />
+          <Button type="submit" disabled={newTeamInput.name.length == 0}>
+            作成
+          </Button>
+        </Form>
+      </Modal>
     </>
   )
 }

@@ -59,6 +59,7 @@ export const Button: FC<ComponentProps<"button">> = ({
       border: 0,
       borderRadius: "2rem",
       color: type == "button" ? "#444" : disabled ? "#ccc" : "#e9e9e9",
+      cursor: disabled ? "not-allowed" : "pointer",
       fontSize: "1rem",
       fontWeight: "bold",
       padding: ".5rem 1rem",
