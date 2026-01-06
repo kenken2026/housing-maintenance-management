@@ -1,6 +1,6 @@
 "use client"
 
-import { type FC } from "react"
+import { useEffect, useState, type FC } from "react"
 import { Card } from "components/elements"
 import { Button } from "components/elements/form"
 const MultiMarkerMap = dynamic(
@@ -10,26 +10,20 @@ const MultiMarkerMap = dynamic(
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-
-const houses: House[] = [
-  {
-    id: 1,
-    name: "千代田テラス",
-    latitude: 35.6977788,
-    longitude: 139.775336,
-    createdAt: new Date(),
-  },
-  {
-    id: 2,
-    name: "山茂登ビル",
-    latitude: 35.6975756,
-    longitude: 139.7781256,
-    createdAt: new Date(),
-  },
-]
+import { houseModel } from "lib/models"
 
 export const HouseList: FC<{ team: Team }> = ({ team }) => {
   const router = useRouter()
+  const [houses, setHouses] = useState<House[]>([])
+
+  useEffect(() => {
+    const fetchHouses = async () => {
+      const houses = await houseModel().index()
+      setHouses(houses)
+    }
+    fetchHouses()
+  }, [])
+
   return (
     <>
       <Card>
@@ -37,7 +31,7 @@ export const HouseList: FC<{ team: Team }> = ({ team }) => {
         <div>
           <Button onClick={() => router.push("/house/new")}>新規作成</Button>
         </div>
-        <MultiMarkerMap markers={houses} />
+        {houseModel.length > 0 && <MultiMarkerMap markers={houses} />}
         <table>
           <tbody>
             {houses.map((house) => (

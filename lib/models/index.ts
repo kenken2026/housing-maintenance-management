@@ -44,3 +44,12 @@ export const teamModel = () => {
     },
   }
 }
+
+export const houseModel = () => {
+  const db = dbInstance
+  if (!db) throw new Error("Database is not initialized")
+  const base = model<House>({ db, tableName: "houses" })
+  return {
+    ...base,
+  }
+}
