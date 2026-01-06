@@ -51,5 +51,7 @@ export const houseModel = () => {
   const base = model<House>({ db, tableName: "houses" })
   return {
     ...base,
+    index: async ({ teamId }: { teamId: number }): Promise<House[]> =>
+      db.select(`SELECT * FROM houses where team_id = ?`, [teamId]),
   }
 }

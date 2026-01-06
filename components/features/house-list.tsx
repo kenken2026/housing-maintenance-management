@@ -18,10 +18,11 @@ export const HouseList: FC<{ team: Team }> = ({ team }) => {
 
   useEffect(() => {
     const fetchHouses = async () => {
-      const houses = await houseModel().index()
+      const houses = await houseModel().index({ teamId: team.id })
       setHouses(houses)
     }
     fetchHouses()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
