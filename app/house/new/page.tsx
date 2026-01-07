@@ -44,6 +44,7 @@ const Page: FC = () => {
       }
     }
     fetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newHouse.latitude, newHouse.longitude])
 
   const handleSubmit = async (e: FormEvent) => {
@@ -51,6 +52,15 @@ const Page: FC = () => {
 
     const newHouseId = await houseModel().create({
       ...newHouse,
+      uid: `${Math.floor(newHouse.latitude)}${
+        newHouse.latitude.toPrecision(8).split(".")[1]
+      }${Math.floor(newHouse.longitude)}${
+        newHouse.longitude.toPrecision(9).split(".")[1]
+      }${("000" + Math.floor(newHouse.altitude)).slice(-4)}${(
+        newHouse.altitude.toPrecision(6) + "00"
+      )
+        .split(".")[1]
+        .slice(0, 2)}`,
       teamId: team.id,
     })
     router.push(`/house?id=${newHouseId}`)
@@ -135,7 +145,7 @@ const Page: FC = () => {
             <Input
               type="number"
               placeholder="標高"
-              value={newHouse.altitude}
+              value={newHouse.altitude ?? ""}
               onChange={({ target: { value } }) =>
                 setNewHouse({ ...newHouse, altitude: Number(value) })
               }

@@ -59,6 +59,7 @@ export const houseModel = () => {
       latitude,
       longitude,
       altitude,
+      uid,
       teamId,
       floorCount,
       roomCount,
@@ -69,6 +70,7 @@ export const houseModel = () => {
       latitude: number
       longitude: number
       altitude?: number
+      uid?: string
       teamId: number
       floorCount: number
       roomCount: number
@@ -76,14 +78,15 @@ export const houseModel = () => {
     }): Promise<number> => {
       const result = await db.execute(
         `INSERT INTO houses (
-        name, description, latitude, longitude, altitude, teamId, floorCount, roomCount, stepCount
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        name, description, latitude, longitude, altitude, uid, teamId, floorCount, roomCount, stepCount
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           name,
           description ?? null,
           latitude,
           longitude,
           altitude ?? null,
+          uid ?? null,
           teamId,
           floorCount,
           roomCount,

@@ -19,7 +19,7 @@ type House = {
   stepCount: number
   createdAt: string
   updatedAt: string
-  udid?: string
+  uid?: string
 
   floorInformation?: object
   exteriorInformation?: object

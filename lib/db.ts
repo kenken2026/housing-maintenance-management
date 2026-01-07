@@ -44,7 +44,7 @@ const createTable = async (database) => {
     roomCount  INTEGER NOT NULL DEFAULT 1 CHECK (roomCount  > 0),
     stepCount  INTEGER NOT NULL DEFAULT 1 CHECK (stepCount  >= 0),
 
-    udid TEXT UNIQUE,
+    uid TEXT UNIQUE,
 
     floorInformation        JSON,
     exteriorInformation     JSON,
