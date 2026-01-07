@@ -4,8 +4,10 @@ import { Card } from "components/elements"
 import { notFound } from "next/navigation"
 import { useTeamState } from "lib/store"
 import { FC, FormEvent, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button, Form, Input, Label } from "components/elements/form"
 import { MarkingMap } from "components/features/marking-map"
+import { houseModel } from "lib/models"
 
 type NewHouseInput = {
   name: string
@@ -17,6 +19,7 @@ type NewHouseInput = {
 }
 
 const Page: FC = () => {
+  const router = useRouter()
   const { team } = useTeamState()
   const [newHouse, setNewHouse] = useState<NewHouseInput>({
     name: "",
@@ -27,8 +30,14 @@ const Page: FC = () => {
     stepCount: 1,
   })
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+
+    const newHouseId = await houseModel().create({
+      ...newHouse,
+      teamId: team.id,
+    })
+    router.push(`/house?id=${newHouseId}`)
   }
 
   if (!team) return notFound()
