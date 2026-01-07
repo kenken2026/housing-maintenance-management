@@ -40,7 +40,7 @@ export const HouseList: FC<{ team: Team }> = ({ team }) => {
                 <td>
                   <Link href={`/house?id=${house.id}`}>{house.name}</Link>
                 </td>
-                <td>{house.createdAt.toLocaleDateString()}</td>
+                <td>{new Date(house.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
