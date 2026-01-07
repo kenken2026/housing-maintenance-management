@@ -21,8 +21,8 @@ const createTable = async (database) => {
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
     )`
   )
   await database.execute(
@@ -31,26 +31,26 @@ const createTable = async (database) => {
     name TEXT NOT NULL,
     description TEXT,
 
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now')),
 
     latitude  REAL NOT NULL CHECK (latitude  BETWEEN -90  AND 90),
     longitude REAL NOT NULL CHECK (longitude BETWEEN -180 AND 180),
     altitude  REAL,
 
-    team_id INTEGER,
+    teamId INTEGER,
 
-    floor_count INTEGER NOT NULL DEFAULT 1 CHECK (floor_count > 0),
-    room_count  INTEGER NOT NULL DEFAULT 1 CHECK (room_count  > 0),
-    step_count  INTEGER NOT NULL DEFAULT 1 CHECK (step_count  >= 0),
+    floorCount INTEGER NOT NULL DEFAULT 1 CHECK (floorCount > 0),
+    roomCount  INTEGER NOT NULL DEFAULT 1 CHECK (roomCount  > 0),
+    stepCount  INTEGER NOT NULL DEFAULT 1 CHECK (stepCount  >= 0),
 
     udid TEXT UNIQUE,
 
-    floor_information        JSON,
-    exterior_information     JSON,
-    check_list_template      JSON,
+    floorInformation        JSON,
+    exteriorInformation     JSON,
+    checkListTemplate      JSON,
 
-    FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+    FOREIGN KEY (teamId) REFERENCES teams(id) ON DELETE CASCADE
     )`
   )
 
@@ -58,20 +58,20 @@ const createTable = async (database) => {
     `CREATE TABLE IF NOT EXISTS comments(
     id INTEGER PRIMARY KEY,
 
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now')),
 
     latitude  REAL NOT NULL CHECK (latitude  BETWEEN -90  AND 90),
     longitude REAL NOT NULL CHECK (longitude BETWEEN -180 AND 180),
     altitude  REAL,
 
-    house_id INTEGER,
+    houseId INTEGER,
 
     body TEXT,
     image TEXT,
-    unit_name TEXT,
+    unitName TEXT,
 
-    FOREIGN KEY (house_id) REFERENCES houses(id) ON DELETE CASCADE
+    FOREIGN KEY (houseId) REFERENCES houses(id) ON DELETE CASCADE
     )`
   )
 
@@ -80,13 +80,13 @@ const createTable = async (database) => {
     id INTEGER PRIMARY KEY,
     description TEXT,
 
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now')),
 
-    house_id INTEGER,
+    houseId INTEGER,
     body JSON,
 
-    FOREIGN KEY (house_id) REFERENCES houses(id) ON DELETE CASCADE
+    FOREIGN KEY (houseId) REFERENCES houses(id) ON DELETE CASCADE
     )`
   )
 }

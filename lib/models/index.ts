@@ -52,6 +52,42 @@ export const houseModel = () => {
   return {
     ...base,
     index: async ({ teamId }: { teamId: number }): Promise<House[]> =>
-      db.select(`SELECT * FROM houses where team_id = ?`, [teamId]),
+      db.select(`SELECT * FROM houses where teamId = ?`, [teamId]),
+    create: async ({
+      name,
+      description,
+      latitude,
+      longitude,
+      teamId,
+      floorCount,
+      roomCount,
+      stepCount,
+    }: {
+      name: string
+      description?: string
+      latitude: number
+      longitude: number
+      teamId: number
+      floorCount: number
+      roomCount: number
+      stepCount: number
+    }): Promise<number> => {
+      const result = await db.execute(
+        `INSERT INTO houses (
+        name, description, latitude, longitude, teamId, floorCount, roomCount, stepCount
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          name,
+          description ?? null,
+          latitude,
+          longitude,
+          teamId,
+          floorCount,
+          roomCount,
+          stepCount,
+        ]
+      )
+      return result.lastInsertId
+    },
   }
 }
