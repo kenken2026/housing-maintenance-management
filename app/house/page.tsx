@@ -14,9 +14,13 @@ const Page: FC = () => {
   useEffect(() => {
     const fetch = async () => {
       const house = await houseModel().show(id)
+      if (!team || house.teamId !== team.id) {
+        return notFound()
+      }
       setHouse(house)
     }
     fetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
   return (
     <>
