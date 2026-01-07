@@ -47,7 +47,7 @@ const MultiMarkerMap: FC<
               })}
             >
               <Popup>
-                <Link href={`/house/${marker.id}`}>{marker.name}</Link>
+                <Link href={`/house?id=${marker.id}`}>{marker.name}</Link>
               </Popup>
             </Marker>
           ))}

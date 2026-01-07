@@ -32,7 +32,7 @@ export const HouseList: FC<{ team: Team }> = ({ team }) => {
         <div>
           <Button onClick={() => router.push("/house/new")}>新規作成</Button>
         </div>
-        {houseModel.length > 0 && <MultiMarkerMap markers={houses} />}
+        {houses.length > 0 && <MultiMarkerMap markers={houses} />}
         <table>
           <tbody>
             {houses.map((house) => (
