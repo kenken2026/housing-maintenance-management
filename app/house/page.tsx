@@ -23,6 +23,16 @@ const Page: FC = () => {
     fetch()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
+
+  const handleDelete = async () => {
+    const asked = await ask(
+      `「${house.name}」を削除してもよろしいでしょうか`,
+      "確認"
+    )
+    if (!asked) return
+    await houseModel().delete(id)
+    window.history.back()
+  }
   return (
     <>
       {house && (
@@ -59,13 +69,7 @@ const Page: FC = () => {
               </tbody>
             </table>
             <div>
-              <Button
-                onClick={() =>
-                  ask(`「${house.name}」を削除してもよろしいでしょうか`, "確認")
-                }
-              >
-                削除
-              </Button>
+              <Button onClick={handleDelete}>削除</Button>
             </div>
           </div>
         </Card>
