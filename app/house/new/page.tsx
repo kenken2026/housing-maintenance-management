@@ -3,14 +3,16 @@
 import { Card } from "components/elements"
 import { notFound } from "next/navigation"
 import { useTeamState } from "lib/store"
-import { FC, FormEvent, useState } from "react"
+import { FC, FormEvent, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button, Form, Input, Label } from "components/elements/form"
 import { MarkingMap } from "components/features/marking-map"
 import { houseModel } from "lib/models"
+import { fetchAltitude } from "lib/geo"
 
 type NewHouseInput = {
   name: string
+  altitude?: number
   latitude: number
   longitude: number
   floorCount: number
@@ -29,6 +31,20 @@ const Page: FC = () => {
     roomCount: 3,
     stepCount: 1,
   })
+
+  useEffect(() => {
+    const fetch = async () => {
+      if (newHouse.latitude && newHouse.longitude) {
+        const altitude = await fetchAltitude({ ...newHouse })
+        if (altitude)
+          setNewHouse((prev) => ({
+            ...prev,
+            altitude,
+          }))
+      }
+    }
+    fetch()
+  }, [newHouse.latitude, newHouse.longitude])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -112,6 +128,16 @@ const Page: FC = () => {
               value={newHouse.longitude}
               onChange={({ target: { value } }) =>
                 setNewHouse({ ...newHouse, longitude: Number(value) })
+              }
+              required
+            />
+            <Label>標高</Label>
+            <Input
+              type="number"
+              placeholder="標高"
+              value={newHouse.altitude}
+              onChange={({ target: { value } }) =>
+                setNewHouse({ ...newHouse, altitude: Number(value) })
               }
               required
             />
