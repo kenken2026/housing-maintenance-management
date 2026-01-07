@@ -8,7 +8,8 @@ export const model = <T>({
   db: Database
   tableName: string
 }) => ({
-  index: async (): Promise<T[]> => db.select(`SELECT * FROM ${tableName}`),
+  index: async (): Promise<T[]> =>
+    db.select(`SELECT * FROM ${tableName} ORDER BY updatedAt DESC`),
 
   show: async (id: number): Promise<T | undefined> => {
     const rows = await db.select<T[]>(
@@ -52,7 +53,10 @@ export const houseModel = () => {
   return {
     ...base,
     index: async ({ teamId }: { teamId: number }): Promise<House[]> =>
-      db.select(`SELECT * FROM houses where teamId = ?`, [teamId]),
+      db.select(
+        `SELECT * FROM houses where teamId = ? ORDER BY updatedAt DESC`,
+        [teamId]
+      ),
     create: async ({
       name,
       description,
