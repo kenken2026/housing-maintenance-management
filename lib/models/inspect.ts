@@ -8,10 +8,10 @@ export const inspectModel = () => {
 
   return {
     ...base,
-    index: async ({ teamId }: { teamId: number }): Promise<Inspect[]> =>
+    index: async ({ houseId }: { houseId: number }): Promise<Inspect[]> =>
       db.select(
-        `SELECT * FROM inspects where teamId = ? ORDER BY updatedAt DESC`,
-        [teamId]
+        `SELECT * FROM inspects where houseId = ? ORDER BY updatedAt DESC`,
+        [houseId]
       ),
   }
 }
