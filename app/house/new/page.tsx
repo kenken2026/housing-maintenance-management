@@ -7,7 +7,7 @@ import { FC, FormEvent, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button, Form, Input, Label } from "components/elements/form"
 import { MarkingMap } from "components/features/marking-map"
-import { houseModel } from "lib/models"
+import { houseModel } from "lib/models/house"
 import { fetchAltitude } from "lib/geo"
 
 type NewHouseInput = {

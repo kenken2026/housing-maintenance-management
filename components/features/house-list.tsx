@@ -10,7 +10,7 @@ const MultiMarkerMap = dynamic(
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { houseModel } from "lib/models"
+import { houseModel } from "lib/models/house"
 
 export const HouseList: FC<{ team: Team }> = ({ team }) => {
   const router = useRouter()

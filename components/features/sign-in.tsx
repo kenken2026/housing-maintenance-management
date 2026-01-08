@@ -5,7 +5,7 @@ import { Card } from "components/elements"
 import { Button, Form, Input } from "components/elements/form"
 import { TeamCard } from "components/modules/team-card"
 import { useTeamState } from "lib/store"
-import { teamModel } from "lib/models"
+import { teamModel } from "lib/models/team"
 import { Modal } from "components/elements/modal"
 
 export const SiginIn: FC = () => {

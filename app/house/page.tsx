@@ -4,7 +4,7 @@ import { Card } from "components/elements"
 import { useSearchParams, notFound } from "next/navigation"
 import { useTeamState } from "lib/store"
 import { FC, useEffect, useState } from "react"
-import { houseModel } from "lib/models"
+import { houseModel } from "lib/models/house"
 import { Button } from "components/elements/form"
 import { UnitList } from "components/features/unit-list"
 
