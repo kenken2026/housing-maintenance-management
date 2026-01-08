@@ -6,6 +6,7 @@ import { useTeamState } from "lib/store"
 import { FC, useEffect, useState } from "react"
 import { houseModel } from "lib/models"
 import { Button } from "components/elements/form"
+import { UnitList } from "components/features/unit-list"
 
 const Page: FC = () => {
   const { team } = useTeamState()
@@ -68,10 +69,36 @@ const Page: FC = () => {
                 </tr>
               </tbody>
             </table>
-            <div>
-              <Button onClick={handleDelete}>削除</Button>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: ".5rem",
+                justifyContent: "flex-end",
+              }}
+            >
+              <table>
+                <tbody>
+                  <tr>
+                    <td>作成</td>
+                    <td style={{ textAlign: "right" }}>
+                      {new Date(house.createdAt).toLocaleString()}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>更新</td>
+                    <td style={{ textAlign: "right" }}>
+                      {new Date(house.updatedAt).toLocaleString()}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div style={{ textAlign: "right" }}>
+                <Button onClick={handleDelete}>削除</Button>
+              </div>
             </div>
           </div>
+          <UnitList house={house} />
         </Card>
       )}
     </>

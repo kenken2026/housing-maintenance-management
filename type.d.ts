@@ -27,3 +27,8 @@ type House = {
 }
 
 type Position = { latitude: number; longitude: number }
+
+type Unit = {
+  uid: string
+  name: string
+}
