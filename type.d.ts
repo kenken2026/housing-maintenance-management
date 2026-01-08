@@ -26,6 +26,29 @@ type House = {
   checkListTemplate?: object
 }
 
+type Comment = {
+  id: number
+  houseId: number
+  latitude: number
+  longitude: number
+  altitude?: number
+  body?: string
+  image?: string
+  unitName?: string
+  createdAt: string
+  updatedAt: string
+}
+
+type Inspect = {
+  id: number
+  houseId: number
+  description?: string
+  payload?: object
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
 type Position = { latitude: number; longitude: number }
 
 type Unit = {

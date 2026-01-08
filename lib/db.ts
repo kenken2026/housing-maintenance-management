@@ -84,7 +84,8 @@ const createTable = async (database) => {
     updatedAt TEXT NOT NULL DEFAULT (datetime('now')),
 
     houseId INTEGER,
-    body JSON,
+    status TEXT NOT NULL DEFAULT 'progressing',
+    payload JSON,
 
     FOREIGN KEY (houseId) REFERENCES houses(id) ON DELETE CASCADE
     )`
