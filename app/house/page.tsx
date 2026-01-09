@@ -7,12 +7,17 @@ import { FC, useEffect, useState } from "react"
 import { houseModel } from "lib/models/house"
 import { Button } from "components/elements/form"
 import { UnitList } from "components/features/unit-list"
+import { inspectModel } from "lib/models/inspect"
+import { Modal } from "components/elements/modal"
+import { InspectForm } from "components/features/inspect-form"
 
 const Page: FC = () => {
   const { team } = useTeamState()
   const searchParams = useSearchParams()
   const id = Number(searchParams.get("id"))
   const [house, setHouse] = useState<House>()
+  const [inspects, setInspects] = useState<Inspect[]>()
+  const [isOpenInspectModal, setIsOpenInspectModal] = useState<boolean>(false)
   useEffect(() => {
     const fetch = async () => {
       const house = await houseModel().show(id)
@@ -20,6 +25,8 @@ const Page: FC = () => {
         return notFound()
       }
       setHouse(house)
+      const inspects = await inspectModel().index({ houseId: house.id })
+      setInspects(inspects)
     }
     fetch()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,6 +105,33 @@ const Page: FC = () => {
               </div>
             </div>
           </div>
+          {inspects && (
+            <div>
+              <h3>点検履歴</h3>
+              <Button onClick={() => setIsOpenInspectModal(true)}>
+                新たに点検する
+              </Button>
+              <Modal
+                isOpen={isOpenInspectModal}
+                onClose={() => setIsOpenInspectModal(false)}
+              >
+                <InspectForm house={house} />
+              </Modal>
+              <table>
+                <tbody>
+                  {inspects.map((inspect) => (
+                    <tr key={inspect.id}>
+                      <td>{inspect.status}</td>
+                      <td style={{ textAlign: "right" }}>
+                        {new Date(inspect.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <h3>ユニット一覧</h3>
           <UnitList house={house} />
         </Card>
       )}

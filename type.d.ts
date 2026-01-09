@@ -55,3 +55,18 @@ type Unit = {
   uid: string
   name: string
 }
+
+type CheckTemplate = {
+  id: number | string
+  largeCategory: string
+  mediumCategory: string
+  smallCategory: string
+  part: string
+  detail: string
+}
+
+type Check = CheckTemplate & {
+  rank?: string
+}
+
+type UnitCheck = { uid: string; checkList: Check[] }

@@ -1,7 +1,13 @@
-import { OuteriorUnits, ResidenceUnits } from "lib/constant"
-import { ComponentProps, FC } from "react"
+import { Button } from "components/elements/form"
+import { Modal } from "components/elements/modal"
+import { OuteriorUnits, ResidenceUnits } from "lib/constants"
+import { defaultCheckList } from "lib/constants/check-list"
+import { ComponentProps, FC, useState } from "react"
 
-export const UnitList: FC<{ house: House }> = ({ house }) => {
+export const UnitList: FC<{ house: House; inspect?: Inspect }> = ({
+  house,
+  inspect,
+}) => {
   return (
     <>
       <UnitGroupWrapper>
@@ -12,7 +18,13 @@ export const UnitList: FC<{ house: House }> = ({ house }) => {
           ) : (
             <>
               {OuteriorUnits.map((unit) => (
-                <UnitBox key={unit.uid} unit={unit} />
+                <UnitBox
+                  key={unit.uid}
+                  unit={unit}
+                  unitCheck={(inspect?.payload as UnitCheck[])?.find(
+                    (uc) => uc.uid == unit.uid
+                  )}
+                />
               ))}
             </>
           )}
@@ -26,7 +38,13 @@ export const UnitList: FC<{ house: House }> = ({ house }) => {
           ) : (
             <>
               {ResidenceUnits.map((unit) => (
-                <UnitBox key={unit.uid} unit={unit} />
+                <UnitBox
+                  key={unit.uid}
+                  unit={unit}
+                  unitCheck={(inspect?.payload as UnitCheck[])?.find(
+                    (uc) => uc.uid == unit.uid
+                  )}
+                />
               ))}
             </>
           )}
@@ -53,6 +71,9 @@ export const UnitList: FC<{ house: House }> = ({ house }) => {
                             uid: `f${i}r${j}`,
                             name: `部屋${j + 1}`,
                           }}
+                          unitCheck={(inspect?.payload as UnitCheck[])?.find(
+                            (uc) => uc.uid == `f${i}r${j}`
+                          )}
                         />
                       ))}
                     {Array(house.stepCount)
@@ -61,6 +82,9 @@ export const UnitList: FC<{ house: House }> = ({ house }) => {
                         <UnitBox
                           key={j}
                           unit={{ uid: `f${i}s${j}`, name: `階段${j + 1}` }}
+                          unitCheck={(inspect?.payload as UnitCheck[])?.find(
+                            (uc) => uc.uid == `f${i}s${j}`
+                          )}
                         />
                       ))}
                   </UnitGroup>
@@ -101,20 +125,62 @@ const UnitGroup: FC<ComponentProps<"div">> = ({ ...props }) => {
   )
 }
 
-const UnitBox: FC<ComponentProps<"div"> & { unit: Unit }> = ({
-  unit,
-  ...props
-}) => {
+const UnitBox: FC<
+  ComponentProps<"div"> & { unit: Unit; unitCheck?: UnitCheck }
+> = ({ unit, unitCheck, ...props }) => {
+  const [isHovered, setIsHovered] = useState<boolean>(false)
+  const [isOpenCheckListModal, setIsOpenCheckListModal] =
+    useState<boolean>(false)
   return (
-    <div
-      style={{
-        border: "2px solid #ddd",
-        borderRadius: ".25rem",
-        padding: ".5rem 1rem",
-      }}
-      {...props}
-    >
-      <h4>{unit.name}</h4>
-    </div>
+    <>
+      <div
+        aria-hidden="true"
+        style={{
+          backgroundColor: isHovered ? "#f5f5f5" : "#fff",
+          border: "2px solid",
+          borderColor: unitCheck ? "#4caf50" : "#ddd",
+          borderRadius: ".25rem",
+          padding: ".5rem 1rem",
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => setIsOpenCheckListModal(true)}
+        {...props}
+      >
+        <h4>{unit.name}</h4>
+      </div>
+      <Modal
+        isOpen={isOpenCheckListModal}
+        onClose={() => setIsOpenCheckListModal(false)}
+      >
+        <h4>{unit.name}</h4>
+        <div>
+          <table style={{ fontSize: ".75rem", width: "100%" }}>
+            <tbody>
+              {defaultCheckList.map((c) => (
+                <tr key={c.id}>
+                  <td>{c.largeCategory}</td>
+                  <td>{c.mediumCategory}</td>
+                  <td>{c.smallCategory}</td>
+                  <td>{c.part}</td>
+                  <td>{c.detail}</td>
+                  <td>
+                    <select>
+                      <option />
+                      {["A", "B", "C", "D1", "D2"].map((rank) => (
+                        <option key={rank} value={rank}>
+                          {rank}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Button>保存</Button>
+        </div>
+      </Modal>
+    </>
   )
 }
