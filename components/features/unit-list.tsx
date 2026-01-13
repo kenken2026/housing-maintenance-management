@@ -1,13 +1,13 @@
-import { Button } from "components/elements/form"
 import { Modal } from "components/elements/modal"
 import { OuteriorUnits, ResidenceUnits } from "lib/constants"
 import { defaultCheckList } from "lib/constants/check-list"
 import { ComponentProps, FC, useState } from "react"
 
-export const UnitList: FC<{ house: House; inspect?: Inspect }> = ({
-  house,
-  inspect,
-}) => {
+export const UnitList: FC<{
+  house: House
+  inspect?: Inspect
+  onChange?(checkList: UnitCheck[]): void
+}> = ({ house, inspect, onChange }) => {
   return (
     <>
       <UnitGroupWrapper>
@@ -24,6 +24,13 @@ export const UnitList: FC<{ house: House; inspect?: Inspect }> = ({
                   unitCheck={(inspect?.payload as UnitCheck[])?.find(
                     (uc) => uc.uid == unit.uid
                   )}
+                  onChange={(uc) => {
+                    const payload = (inspect?.payload ?? []) as UnitCheck[]
+                    onChange?.([
+                      ...payload.filter((c) => c.uid != unit.uid),
+                      uc,
+                    ])
+                  }}
                 />
               ))}
             </>
@@ -44,6 +51,13 @@ export const UnitList: FC<{ house: House; inspect?: Inspect }> = ({
                   unitCheck={(inspect?.payload as UnitCheck[])?.find(
                     (uc) => uc.uid == unit.uid
                   )}
+                  onChange={(uc) => {
+                    const payload = (inspect?.payload ?? []) as UnitCheck[]
+                    onChange?.([
+                      ...payload.filter((c) => c.uid != unit.uid),
+                      uc,
+                    ])
+                  }}
                 />
               ))}
             </>
@@ -74,6 +88,14 @@ export const UnitList: FC<{ house: House; inspect?: Inspect }> = ({
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}r${j}`
                           )}
+                          onChange={(uc) => {
+                            const payload = (inspect?.payload ??
+                              []) as UnitCheck[]
+                            onChange?.([
+                              ...payload.filter((c) => c.uid != `f${i}r${j}`),
+                              uc,
+                            ])
+                          }}
                         />
                       ))}
                     {Array(house.stepCount)
@@ -85,6 +107,14 @@ export const UnitList: FC<{ house: House; inspect?: Inspect }> = ({
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}s${j}`
                           )}
+                          onChange={(uc) => {
+                            const payload = (inspect?.payload ??
+                              []) as UnitCheck[]
+                            onChange?.([
+                              ...payload.filter((c) => c.uid != `f${i}s${j}`),
+                              uc,
+                            ])
+                          }}
                         />
                       ))}
                   </UnitGroup>
@@ -126,8 +156,12 @@ const UnitGroup: FC<ComponentProps<"div">> = ({ ...props }) => {
 }
 
 const UnitBox: FC<
-  ComponentProps<"div"> & { unit: Unit; unitCheck?: UnitCheck }
-> = ({ unit, unitCheck, ...props }) => {
+  ComponentProps<"div"> & {
+    unit: Unit
+    unitCheck?: UnitCheck
+    onChange?(unitCheck: UnitCheck): void
+  }
+> = ({ unit, unitCheck, onChange, ...props }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isOpenCheckListModal, setIsOpenCheckListModal] =
     useState<boolean>(false)
@@ -157,15 +191,35 @@ const UnitBox: FC<
         <div>
           <table style={{ fontSize: ".75rem", width: "100%" }}>
             <tbody>
-              {defaultCheckList.map((c) => (
-                <tr key={c.id}>
-                  <td>{c.largeCategory}</td>
-                  <td>{c.mediumCategory}</td>
-                  <td>{c.smallCategory}</td>
-                  <td>{c.part}</td>
-                  <td>{c.detail}</td>
+              {defaultCheckList.map((check) => (
+                <tr key={check.id}>
+                  <td>{check.largeCategory}</td>
+                  <td>{check.mediumCategory}</td>
+                  <td>{check.smallCategory}</td>
+                  <td>{check.part}</td>
+                  <td>{check.detail}</td>
                   <td>
-                    <select>
+                    <select
+                      value={
+                        unitCheck?.checkList?.find((c) => c.id == check.id)
+                          ?.rank
+                      }
+                      onChange={({ target: { value } }) => {
+                        if (!unitCheck) return
+                        onChange?.({
+                          ...unitCheck,
+                          checkList: [
+                            ...(unitCheck.checkList ?? []).filter(
+                              (c) => c.id != check.id
+                            ),
+                            {
+                              ...check,
+                              rank: value || undefined,
+                            },
+                          ],
+                        })
+                      }}
+                    >
                       <option />
                       {["A", "B", "C", "D1", "D2"].map((rank) => (
                         <option key={rank} value={rank}>
@@ -178,7 +232,6 @@ const UnitBox: FC<
               ))}
             </tbody>
           </table>
-          <Button>保存</Button>
         </div>
       </Modal>
     </>

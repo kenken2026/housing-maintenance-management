@@ -20,9 +20,9 @@ export const inspectModel = () => {
       payload,
     }: {
       houseId: number
-      status: "in_progress" | "completed"
+      status: string
       description?: string
-      payload?: UnitCheck[]
+      payload?: object
     }): Promise<number> => {
       const result = await db.execute(
         `INSERT INTO inspects (houseId, status, description, payload) VALUES (?, ?, ?, ?)`,
@@ -37,9 +37,9 @@ export const inspectModel = () => {
       payload,
     }: {
       id: number
-      status: "in_progress" | "completed"
+      status: string
       description?: string
-      payload?: UnitCheck[]
+      payload?: object
     }): Promise<number> => {
       const result = await db.execute(
         `UPDATE inspects SET status = ?, description = ?, payload = ? WHERE id = ?`,
