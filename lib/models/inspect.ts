@@ -1,6 +1,8 @@
 import { dbInstance } from "lib/db"
 import { model } from "."
 
+type InspectRaw = Inspect & { payload?: string }
+
 export const inspectModel = () => {
   const db = dbInstance
   if (!db) throw new Error("Database is not initialized")
@@ -9,8 +11,8 @@ export const inspectModel = () => {
   return {
     ...base,
     index: async ({ houseId }: { houseId: number }): Promise<Inspect[]> => {
-      const rows = await db.select<(Inspect & { payload?: string })[]>(
-        `SELECT * FROM inspects where houseId = ? ORDER BY updatedAt DESC`,
+      const rows = await db.select<InspectRaw[]>(
+        `SELECT * FROM inspects where houseId = ? ORDER BY createdAt DESC`,
         [houseId]
       )
       return rows.map(
@@ -23,7 +25,7 @@ export const inspectModel = () => {
       )
     },
     show: async ({ id }: { id: number }): Promise<Inspect> => {
-      const rows = await db.select<(Inspect & { payload?: string })[]>(
+      const rows = await db.select<InspectRaw[]>(
         `SELECT * FROM inspects where id = ? `,
         [id]
       )
