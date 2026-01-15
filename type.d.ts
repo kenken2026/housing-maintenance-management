@@ -70,3 +70,8 @@ type Check = CheckTemplate & {
 }
 
 type UnitCheck = { uid: string; checkList: Check[] }
+
+// Common
+
+type MaybePromise<T> = T | Promise<T>
+type Handler<T, R> = (arg: T) => MaybePromise<R>

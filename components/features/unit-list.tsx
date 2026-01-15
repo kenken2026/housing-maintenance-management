@@ -24,13 +24,16 @@ export const UnitList: FC<{
                   unitCheck={(inspect?.payload as UnitCheck[])?.find(
                     (uc) => uc.uid == unit.uid
                   )}
-                  onChange={(uc) => {
-                    const payload = (inspect?.payload ?? []) as UnitCheck[]
-                    onChange?.([
-                      ...payload.filter((c) => c.uid != unit.uid),
-                      uc,
-                    ])
-                  }}
+                  onChange={
+                    onChange &&
+                    ((uc) => {
+                      const payload = (inspect?.payload ?? []) as UnitCheck[]
+                      onChange?.([
+                        ...payload.filter((c) => c.uid != unit.uid),
+                        uc,
+                      ])
+                    })
+                  }
                 />
               ))}
             </>
@@ -51,13 +54,16 @@ export const UnitList: FC<{
                   unitCheck={(inspect?.payload as UnitCheck[])?.find(
                     (uc) => uc.uid == unit.uid
                   )}
-                  onChange={(uc) => {
-                    const payload = (inspect?.payload ?? []) as UnitCheck[]
-                    onChange?.([
-                      ...payload.filter((c) => c.uid != unit.uid),
-                      uc,
-                    ])
-                  }}
+                  onChange={
+                    onChange &&
+                    ((uc) => {
+                      const payload = (inspect?.payload ?? []) as UnitCheck[]
+                      onChange?.([
+                        ...payload.filter((c) => c.uid != unit.uid),
+                        uc,
+                      ])
+                    })
+                  }
                 />
               ))}
             </>
@@ -88,14 +94,17 @@ export const UnitList: FC<{
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}r${j}`
                           )}
-                          onChange={(uc) => {
-                            const payload = (inspect?.payload ??
-                              []) as UnitCheck[]
-                            onChange?.([
-                              ...payload.filter((c) => c.uid != `f${i}r${j}`),
-                              uc,
-                            ])
-                          }}
+                          onChange={
+                            onChange &&
+                            ((uc) => {
+                              const payload = (inspect?.payload ??
+                                []) as UnitCheck[]
+                              onChange?.([
+                                ...payload.filter((c) => c.uid != `f${i}r${j}`),
+                                uc,
+                              ])
+                            })
+                          }
                         />
                       ))}
                     {Array(house.stepCount)
@@ -107,14 +116,17 @@ export const UnitList: FC<{
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}s${j}`
                           )}
-                          onChange={(uc) => {
-                            const payload = (inspect?.payload ??
-                              []) as UnitCheck[]
-                            onChange?.([
-                              ...payload.filter((c) => c.uid != `f${i}s${j}`),
-                              uc,
-                            ])
-                          }}
+                          onChange={
+                            onChange &&
+                            ((uc) => {
+                              const payload = (inspect?.payload ??
+                                []) as UnitCheck[]
+                              onChange?.([
+                                ...payload.filter((c) => c.uid != `f${i}s${j}`),
+                                uc,
+                              ])
+                            })
+                          }
                         />
                       ))}
                   </UnitGroup>
@@ -178,62 +190,67 @@ const UnitBox: FC<
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => setIsOpenCheckListModal(true)}
+        onClick={() => onChange && setIsOpenCheckListModal(true)}
         {...props}
       >
-        <h4>{unit.name}</h4>
+        <h4>
+          {unitCheck && <>✓&nbsp;</>}
+          {unit.name}
+        </h4>
       </div>
-      <Modal
-        isOpen={isOpenCheckListModal}
-        onClose={() => setIsOpenCheckListModal(false)}
-      >
-        <h4>{unit.name}</h4>
-        <div>
-          <table style={{ fontSize: ".75rem", width: "100%" }}>
-            <tbody>
-              {defaultCheckList.map((check) => (
-                <tr key={check.id}>
-                  <td>{check.largeCategory}</td>
-                  <td>{check.mediumCategory}</td>
-                  <td>{check.smallCategory}</td>
-                  <td>{check.part}</td>
-                  <td>{check.detail}</td>
-                  <td>
-                    <select
-                      value={
-                        unitCheck?.checkList?.find((c) => c.id == check.id)
-                          ?.rank
-                      }
-                      onChange={({ target: { value } }) => {
-                        if (!unitCheck) return
-                        onChange?.({
-                          ...unitCheck,
-                          checkList: [
-                            ...(unitCheck.checkList ?? []).filter(
-                              (c) => c.id != check.id
-                            ),
-                            {
-                              ...check,
-                              rank: value || undefined,
-                            },
-                          ],
-                        })
-                      }}
-                    >
-                      <option />
-                      {["A", "B", "C", "D1", "D2"].map((rank) => (
-                        <option key={rank} value={rank}>
-                          {rank}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Modal>
+      {onChange && (
+        <Modal
+          isOpen={isOpenCheckListModal}
+          onClose={() => setIsOpenCheckListModal(false)}
+        >
+          <h4>{unit.name}</h4>
+          <div>
+            <table style={{ fontSize: ".75rem", width: "100%" }}>
+              <tbody>
+                {defaultCheckList.map((check) => (
+                  <tr key={check.id}>
+                    <td>{check.largeCategory}</td>
+                    <td>{check.mediumCategory}</td>
+                    <td>{check.smallCategory}</td>
+                    <td>{check.part}</td>
+                    <td>{check.detail}</td>
+                    <td>
+                      <select
+                        value={
+                          unitCheck?.checkList?.find((c) => c.id == check.id)
+                            ?.rank
+                        }
+                        onChange={({ target: { value } }) => {
+                          if (!unitCheck) return
+                          onChange?.({
+                            ...unitCheck,
+                            checkList: [
+                              ...(unitCheck.checkList ?? []).filter(
+                                (c) => c.id != check.id
+                              ),
+                              {
+                                ...check,
+                                rank: value || undefined,
+                              },
+                            ],
+                          })
+                        }}
+                      >
+                        <option />
+                        {["A", "B", "C", "D1", "D2"].map((rank) => (
+                          <option key={rank} value={rank}>
+                            {rank}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Modal>
+      )}
     </>
   )
 }

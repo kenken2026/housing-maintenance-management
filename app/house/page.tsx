@@ -17,6 +17,7 @@ const Page: FC = () => {
   const id = Number(searchParams.get("id"))
   const [house, setHouse] = useState<House>()
   const [inspects, setInspects] = useState<Inspect[]>()
+  const [editingInspect, setEditingInspect] = useState<Inspect>()
   const [isOpenInspectModal, setIsOpenInspectModal] = useState<boolean>(false)
   useEffect(() => {
     const fetch = async () => {
@@ -108,27 +109,82 @@ const Page: FC = () => {
           {inspects && (
             <div>
               <h3>点検履歴</h3>
+              <div style={{ padding: ".5rem" }}>
+                <table
+                  style={{
+                    borderCollapse: "collapse",
+                    width: "100%",
+                  }}
+                >
+                  <thead>
+                    <tr>
+                      <td>点検日</td>
+                      <td>ステータス</td>
+                      <td>最終更新</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {inspects.map((inspect) => (
+                      <tr
+                        key={inspect.id}
+                        style={{
+                          borderTop: "solid 2px #eee",
+                          padding: ".25rem",
+                        }}
+                      >
+                        <td>
+                          {new Date(inspect.createdAt).toLocaleDateString()}
+                        </td>
+                        <td>
+                          {inspect.status == "in_progress"
+                            ? "点検中"
+                            : "点検済み"}
+                        </td>
+                        <td>{new Date(inspect.updatedAt).toLocaleString()}</td>
+                        <td>
+                          <div
+                            aria-hidden={true}
+                            style={{
+                              color: "#339",
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                            }}
+                            onClick={() => {
+                              setEditingInspect(inspect)
+                              setIsOpenInspectModal(true)
+                            }}
+                          >
+                            修正する
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
               <Button onClick={() => setIsOpenInspectModal(true)}>
                 新たに点検する
               </Button>
               <Modal
                 isOpen={isOpenInspectModal}
-                onClose={() => setIsOpenInspectModal(false)}
+                onClose={() => {
+                  setEditingInspect(undefined)
+                  setIsOpenInspectModal(false)
+                }}
               >
-                <InspectForm house={house} />
+                <InspectForm
+                  house={house}
+                  inspect={editingInspect}
+                  onSave={async () => {
+                    const inspects = await inspectModel().index({
+                      houseId: house.id,
+                    })
+                    setInspects(inspects)
+                    setIsOpenInspectModal(false)
+                  }}
+                />
               </Modal>
-              <table>
-                <tbody>
-                  {inspects.map((inspect) => (
-                    <tr key={inspect.id}>
-                      <td>{inspect.status}</td>
-                      <td style={{ textAlign: "right" }}>
-                        {new Date(inspect.createdAt).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           )}
           <h3>ユニット一覧</h3>

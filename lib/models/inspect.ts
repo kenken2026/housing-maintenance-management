@@ -42,8 +42,8 @@ export const inspectModel = () => {
       payload?: object
     }): Promise<number> => {
       const result = await db.execute(
-        `UPDATE inspects SET status = ?, description = ?, payload = ? WHERE id = ?`,
-        [status, description || null, payload, id]
+        `UPDATE inspects SET status = ?, description = ?, payload = ?, updatedAt = ? WHERE id = ?`,
+        [status, description || null, payload, new Date().toISOString(), id]
       )
       return result.lastInsertId
     },
