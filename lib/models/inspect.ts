@@ -8,11 +8,31 @@ export const inspectModel = () => {
 
   return {
     ...base,
-    index: async ({ houseId }: { houseId: number }): Promise<Inspect[]> =>
-      db.select(
+    index: async ({ houseId }: { houseId: number }): Promise<Inspect[]> => {
+      const rows = await db.select<(Inspect & { payload?: string })[]>(
         `SELECT * FROM inspects where houseId = ? ORDER BY updatedAt DESC`,
         [houseId]
-      ),
+      )
+      return rows.map(
+        (row): Inspect => ({
+          ...row,
+          payload: row.payload
+            ? (JSON.parse(row.payload as string) as UnitCheck[])
+            : [],
+        })
+      )
+    },
+    show: async ({ id }: { id: number }): Promise<Inspect> => {
+      const rows = await db.select<(Inspect & { payload?: string })[]>(
+        `SELECT * FROM inspects where id = ? `,
+        [id]
+      )
+      const row = rows[0]
+      return {
+        ...row,
+        payload: row.payload ? (JSON.parse(row.payload) as UnitCheck[]) : [],
+      }
+    },
     create: async ({
       houseId,
       status,

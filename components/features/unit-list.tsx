@@ -221,11 +221,10 @@ const UnitBox: FC<
                             ?.rank
                         }
                         onChange={({ target: { value } }) => {
-                          if (!unitCheck) return
                           onChange?.({
-                            ...unitCheck,
+                            ...(unitCheck ?? { uid: unit.uid }),
                             checkList: [
-                              ...(unitCheck.checkList ?? []).filter(
+                              ...(unitCheck?.checkList ?? []).filter(
                                 (c) => c.id != check.id
                               ),
                               {

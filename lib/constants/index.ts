@@ -35,3 +35,5 @@ export const ResidenceUnits: Unit[] = [
     name: "設備等（住棟）",
   },
 ] as const
+
+export const InspectStatusList = ["in_progress", "completed"] as const

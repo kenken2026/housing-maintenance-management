@@ -43,7 +43,7 @@ type Inspect = {
   id: number
   houseId: number
   description?: string
-  payload?: object
+  payload?: UnitCheck[]
   status: string
   createdAt: string
   updatedAt: string
