@@ -22,6 +22,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
+      - uses: pnpm/action-setup@v4
+
       - name: Install deps
         run: pnpm i
 
