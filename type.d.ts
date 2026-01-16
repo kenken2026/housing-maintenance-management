@@ -34,7 +34,8 @@ type Comment = {
   altitude?: number
   body?: string
   image?: string
-  unitName?: string
+  uid?: string
+  uname?: string
   createdAt: string
   updatedAt: string
 }
