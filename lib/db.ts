@@ -69,7 +69,8 @@ const createTable = async (database) => {
 
     body TEXT,
     image TEXT,
-    unitName TEXT,
+    uname TEXT,
+    uid TEXT,
 
     FOREIGN KEY (houseId) REFERENCES houses(id) ON DELETE CASCADE
     )`
