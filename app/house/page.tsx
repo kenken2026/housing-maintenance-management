@@ -21,6 +21,7 @@ const Page: FC = () => {
   const [inspects, setInspects] = useState<Inspect[]>()
   const [comments, setComments] = useState<HouseComment[]>()
   const [editingInspect, setEditingInspect] = useState<Inspect>()
+  const [editingComment, setEditingComment] = useState<HouseComment>()
   const [isOpenInspectModal, setIsOpenInspectModal] = useState<boolean>(false)
   const [isOpenCommentModal, setIsOpenComentModal] = useState<boolean>(false)
 
@@ -161,7 +162,7 @@ const Page: FC = () => {
                               setIsOpenInspectModal(true)
                             }}
                           >
-                            修正する
+                            修正
                           </div>
                         </td>
                       </tr>
@@ -206,6 +207,7 @@ const Page: FC = () => {
                 >
                   <thead>
                     <tr>
+                      <td></td>
                       <td>記載日</td>
                       <td>コメント</td>
                       <td>最終更新</td>
@@ -221,10 +223,66 @@ const Page: FC = () => {
                         }}
                       >
                         <td>
+                          {comment.image && (
+                            <div
+                              style={{
+                                backgroundImage: `url(${comment.image})`,
+                                backgroundRepeat: "no-repeat",
+                                backgroundSize: "contain",
+                                height: "4rem",
+                                width: "4rem",
+                              }}
+                            />
+                          )}
+                        </td>
+                        <td>
                           {new Date(comment.createdAt).toLocaleDateString()}
                         </td>
                         <td>{comment.body}</td>
                         <td>{new Date(comment.updatedAt).toLocaleString()}</td>
+                        <td>
+                          <div
+                            aria-hidden={true}
+                            style={{
+                              color: "#339",
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                            }}
+                            onClick={() => {
+                              setEditingComment(comment)
+                              setIsOpenComentModal(true)
+                            }}
+                          >
+                            修正
+                          </div>
+                        </td>
+                        <td>
+                          <div
+                            aria-hidden={true}
+                            style={{
+                              color: "#933",
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                            }}
+                            onClick={async () => {
+                              if (
+                                !(await ask(
+                                  `削除してもよろしいでしょうか`,
+                                  "確認"
+                                ))
+                              )
+                                return
+                              await commentModel().delete(comment.id)
+                              setComments(
+                                await commentModel().index({
+                                  houseId: house.id,
+                                })
+                              )
+                            }}
+                          >
+                            削除
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -241,11 +299,13 @@ const Page: FC = () => {
               >
                 <CommentForm
                   house={house}
+                  comment={editingComment}
                   onSave={async () => {
                     const comments = await commentModel().index({
                       houseId: house.id,
                     })
                     setComments(comments)
+                    setEditingComment(undefined)
                     setIsOpenComentModal(false)
                   }}
                 />
