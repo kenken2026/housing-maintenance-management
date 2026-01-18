@@ -26,7 +26,7 @@ type House = {
   checkListTemplate?: object
 }
 
-type Comment = {
+type HouseComment = {
   id: number
   houseId: number
   latitude: number

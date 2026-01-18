@@ -10,6 +10,8 @@ import { UnitList } from "components/features/unit-list"
 import { inspectModel } from "lib/models/inspect"
 import { Modal } from "components/elements/modal"
 import { InspectForm } from "components/features/inspect-form"
+import { commentModel } from "lib/models/comment"
+import { CommentForm } from "components/features/comment-form"
 
 const Page: FC = () => {
   const { team } = useTeamState()
@@ -17,8 +19,11 @@ const Page: FC = () => {
   const id = Number(searchParams.get("id"))
   const [house, setHouse] = useState<House>()
   const [inspects, setInspects] = useState<Inspect[]>()
+  const [comments, setComments] = useState<HouseComment[]>()
   const [editingInspect, setEditingInspect] = useState<Inspect>()
   const [isOpenInspectModal, setIsOpenInspectModal] = useState<boolean>(false)
+  const [isOpenCommentModal, setIsOpenComentModal] = useState<boolean>(false)
+
   useEffect(() => {
     const fetch = async () => {
       const house = await houseModel().show(id)
@@ -28,6 +33,8 @@ const Page: FC = () => {
       setHouse(house)
       const inspects = await inspectModel().index({ houseId: house.id })
       setInspects(inspects)
+      const comments = await commentModel().index({ houseId: house.id })
+      setComments(comments)
     }
     fetch()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,6 +189,64 @@ const Page: FC = () => {
                     })
                     setInspects(inspects)
                     setIsOpenInspectModal(false)
+                  }}
+                />
+              </Modal>
+            </div>
+          )}
+          {comments && (
+            <div>
+              <h3>記載事項</h3>
+              <div style={{ padding: ".5rem" }}>
+                <table
+                  style={{
+                    borderCollapse: "collapse",
+                    width: "100%",
+                  }}
+                >
+                  <thead>
+                    <tr>
+                      <td>記載日</td>
+                      <td>コメント</td>
+                      <td>最終更新</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {comments.map((comment) => (
+                      <tr
+                        key={comment.id}
+                        style={{
+                          borderTop: "solid 2px #eee",
+                          padding: ".25rem",
+                        }}
+                      >
+                        <td>
+                          {new Date(comment.createdAt).toLocaleDateString()}
+                        </td>
+                        <td>{comment.body}</td>
+                        <td>{new Date(comment.updatedAt).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <Button onClick={() => setIsOpenComentModal(true)}>
+                コメントする
+              </Button>
+              <Modal
+                isOpen={isOpenCommentModal}
+                onClose={() => {
+                  setIsOpenComentModal(false)
+                }}
+              >
+                <CommentForm
+                  house={house}
+                  onSave={async () => {
+                    const comments = await commentModel().index({
+                      houseId: house.id,
+                    })
+                    setComments(comments)
+                    setIsOpenComentModal(false)
                   }}
                 />
               </Modal>

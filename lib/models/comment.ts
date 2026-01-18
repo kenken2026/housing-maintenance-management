@@ -4,12 +4,12 @@ import { model } from "."
 export const commentModel = () => {
   const db = dbInstance
   if (!db) throw new Error("Database is not initialized")
-  const base = model<Comment>({ db, tableName: "comments" })
+  const base = model<HouseComment>({ db, tableName: "comments" })
 
   return {
     ...base,
-    index: async ({ houseId }: { houseId: number }): Promise<Comment[]> =>
-      await db.select<Comment[]>(
+    index: async ({ houseId }: { houseId: number }): Promise<HouseComment[]> =>
+      await db.select<HouseComment[]>(
         `SELECT * FROM comments where houseId = ? ORDER BY createdAt DESC`,
         [houseId]
       ),
@@ -65,7 +65,7 @@ export const commentModel = () => {
       image?: string
     }): Promise<number> => {
       const result = await db.execute(
-        `UPDATE comment SET
+        `UPDATE comments SET
         latitude = ?, longitude = ?, altitude = ?, body = ?, image = ?, updatedAt = ?
         WHERE id = ?`,
         [

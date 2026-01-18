@@ -7,10 +7,15 @@ import "leaflet/dist/leaflet.css"
 import { ChangeMapCenter } from "lib/map"
 
 export const MarkingMap: FC<
-  ComponentProps<"div"> & { onChangePosition: (position: Position) => void }
-> = ({ onChangePosition, style, ...props }) => {
+  ComponentProps<"div"> & {
+    onChangePosition: (position: Position) => void
+    initialPosition?: Position
+  }
+> = ({ onChangePosition, initialPosition, style, ...props }) => {
   const [position, setPosition] = useState<LatLng>(
-    new LatLng(35.6809591, 139.7673068)
+    initialPosition
+      ? new LatLng(initialPosition.latitude, initialPosition.longitude)
+      : new LatLng(35.6809591, 139.7673068)
   )
 
   return (
