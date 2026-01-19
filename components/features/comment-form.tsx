@@ -7,8 +7,11 @@ import { MarkingMap } from "./marking-map"
 export const CommentForm: FC<{
   house: House
   comment?: HouseComment
+  inspect?: Inspect
+  uname?: string
+  uid?: string
   onSave: Handler<void, void>
-}> = ({ house, comment: initialComment, onSave }) => {
+}> = ({ house, comment: initialComment, inspect, uid, uname, onSave }) => {
   const [comment, setComment] = useState<HouseComment>({
     latitude: house.latitude,
     longitude: house.longitude,
@@ -23,20 +26,15 @@ export const CommentForm: FC<{
       await commentModel().create({
         ...comment,
         houseId: house.id,
+        inspectId: inspect?.id,
+        uname,
+        uid,
       })
     }
     await onSave()
   }
   return (
     <div>
-      <h3>「{house.name}」へのコメント</h3>
-      <p>
-        記載日:&nbsp;
-        {(comment?.createdAt
-          ? new Date(comment.createdAt)
-          : new Date()
-        ).toLocaleDateString()}
-      </p>
       <Form onSubmit={handleSubmit}>
         <MarkingMap
           initialPosition={{ ...house }}

@@ -211,6 +211,7 @@ const Page: FC = () => {
                     <tr>
                       <td></td>
                       <td>記載日</td>
+                      <td>ユニット</td>
                       <td>コメント</td>
                       <td>最終更新</td>
                     </tr>
@@ -246,6 +247,7 @@ const Page: FC = () => {
                         <td>
                           {new Date(comment.createdAt).toLocaleDateString()}
                         </td>
+                        <td>{comment.uname}</td>
                         <td>{comment.body}</td>
                         <td>{new Date(comment.updatedAt).toLocaleString()}</td>
                         <td>
@@ -305,6 +307,14 @@ const Page: FC = () => {
                   setIsOpenComentModal(false)
                 }}
               >
+                <h3>「{house.name}」へのコメント</h3>
+                <p>
+                  記載日:&nbsp;
+                  {(editingComment?.createdAt
+                    ? new Date(editingComment.createdAt)
+                    : new Date()
+                  ).toLocaleDateString()}
+                </p>
                 <CommentForm
                   house={house}
                   comment={editingComment}

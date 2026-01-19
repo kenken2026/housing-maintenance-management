@@ -1,7 +1,7 @@
 import { Modal } from "components/elements/modal"
 import { OuteriorUnits, ResidenceUnits } from "lib/constants"
-import { defaultCheckList } from "lib/constants/check-list"
 import { ComponentProps, FC, useState } from "react"
+import { CheckList } from "./check-list"
 
 export const UnitList: FC<{
   house: House
@@ -19,6 +19,7 @@ export const UnitList: FC<{
             <>
               {OuteriorUnits.map((unit) => (
                 <UnitBox
+                  house={house}
                   key={unit.uid}
                   unit={unit}
                   unitCheck={(inspect?.payload as UnitCheck[])?.find(
@@ -49,6 +50,7 @@ export const UnitList: FC<{
             <>
               {ResidenceUnits.map((unit) => (
                 <UnitBox
+                  house={house}
                   key={unit.uid}
                   unit={unit}
                   unitCheck={(inspect?.payload as UnitCheck[])?.find(
@@ -86,6 +88,7 @@ export const UnitList: FC<{
                       .fill(0)
                       .map((_, j) => (
                         <UnitBox
+                          house={house}
                           key={j}
                           unit={{
                             uid: `f${i}r${j}`,
@@ -112,6 +115,7 @@ export const UnitList: FC<{
                       .map((_, j) => (
                         <UnitBox
                           key={j}
+                          house={house}
                           unit={{ uid: `f${i}s${j}`, name: `階段${j + 1}` }}
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}s${j}`
@@ -169,11 +173,13 @@ const UnitGroup: FC<ComponentProps<"div">> = ({ ...props }) => {
 
 const UnitBox: FC<
   ComponentProps<"div"> & {
+    house: House
     unit: Unit
     unitCheck?: UnitCheck
+    inspect?: Inspect
     onChange?(unitCheck: UnitCheck): void
   }
-> = ({ unit, unitCheck, onChange, ...props }) => {
+> = ({ house, unit, unitCheck, inspect, onChange, ...props }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isOpenCheckListModal, setIsOpenCheckListModal] =
     useState<boolean>(false)
@@ -203,51 +209,13 @@ const UnitBox: FC<
           isOpen={isOpenCheckListModal}
           onClose={() => setIsOpenCheckListModal(false)}
         >
-          <h4>{unit.name}</h4>
-          <div>
-            <table style={{ fontSize: ".75rem", width: "100%" }}>
-              <tbody>
-                {defaultCheckList.map((check) => (
-                  <tr key={check.id}>
-                    <td>{check.largeCategory}</td>
-                    <td>{check.mediumCategory}</td>
-                    <td>{check.smallCategory}</td>
-                    <td>{check.part}</td>
-                    <td>{check.detail}</td>
-                    <td>
-                      <select
-                        value={
-                          unitCheck?.checkList?.find((c) => c.id == check.id)
-                            ?.rank
-                        }
-                        onChange={({ target: { value } }) => {
-                          onChange?.({
-                            ...(unitCheck ?? { uid: unit.uid }),
-                            checkList: [
-                              ...(unitCheck?.checkList ?? []).filter(
-                                (c) => c.id != check.id
-                              ),
-                              {
-                                ...check,
-                                rank: value || undefined,
-                              },
-                            ],
-                          })
-                        }}
-                      >
-                        <option />
-                        {["A", "B", "C", "D1", "D2"].map((rank) => (
-                          <option key={rank} value={rank}>
-                            {rank}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <CheckList
+            house={house}
+            unit={unit}
+            unitCheck={unitCheck}
+            inspect={inspect}
+            onChange={onChange}
+          />
         </Modal>
       )}
     </>

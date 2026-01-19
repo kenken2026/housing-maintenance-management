@@ -36,6 +36,7 @@ type HouseComment = {
   image?: string
   uid?: string
   uname?: string
+  inspectId?: number
   createdAt: string
   updatedAt: string
 }

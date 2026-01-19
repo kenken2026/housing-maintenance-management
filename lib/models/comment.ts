@@ -15,6 +15,7 @@ export const commentModel = () => {
       ),
     create: async ({
       houseId,
+      inspectId,
       latitude,
       longitude,
       altitude,
@@ -24,6 +25,7 @@ export const commentModel = () => {
       uname,
     }: {
       houseId: number
+      inspectId?: number
       latitude: number
       longitude: number
       altitude?: number
@@ -34,10 +36,11 @@ export const commentModel = () => {
     }): Promise<number> => {
       const result = await db.execute(
         `INSERT INTO comments
-        (houseId, latitude, longitude, altitude, body, image, uid, uname)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        (houseId, inspectId, latitude, longitude, altitude, body, image, uid, uname)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           houseId,
+          inspectId ?? null,
           latitude,
           longitude,
           altitude ?? null,
