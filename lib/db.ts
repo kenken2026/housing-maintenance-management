@@ -1,5 +1,6 @@
 import Database from "@tauri-apps/plugin-sql"
 import { appDataDir } from "@tauri-apps/api/path"
+import { message } from "@tauri-apps/plugin-dialog"
 
 export let dbInstance: Database | undefined = undefined
 
@@ -12,8 +13,9 @@ export const initializeDB = async (): Promise<Database> => {
     await createTable(dbInstance)
 
     return dbInstance
-  } catch (error) {
-    console.error("Database initialization failed:", error)
+  } catch (error: unknown) {
+    if (error instanceof Error)
+      await message(`${error.message}:\n${error.stack}`, { title: error.name })
     throw error
   }
 }
