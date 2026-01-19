@@ -1,11 +1,14 @@
 import Database from "@tauri-apps/plugin-sql"
+import { appDataDir } from "@tauri-apps/api/path"
 
 export let dbInstance: Database | undefined = undefined
 
 export const initializeDB = async (): Promise<Database> => {
   if (dbInstance) return dbInstance
   try {
-    dbInstance = await Database.load("sqlite:housing-maintanance-management.db")
+    const dir = await appDataDir()
+    const dbPath = dir + "/housing-maintanance-management.db"
+    dbInstance = await Database.load(`sqlite:${dbPath}`)
     await createTable(dbInstance)
 
     return dbInstance
