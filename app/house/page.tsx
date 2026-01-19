@@ -22,8 +22,10 @@ const Page: FC = () => {
   const [comments, setComments] = useState<HouseComment[]>()
   const [editingInspect, setEditingInspect] = useState<Inspect>()
   const [editingComment, setEditingComment] = useState<HouseComment>()
+  const [selectedImage, setSelectedImage] = useState<string>()
   const [isOpenInspectModal, setIsOpenInspectModal] = useState<boolean>(false)
   const [isOpenCommentModal, setIsOpenComentModal] = useState<boolean>(false)
+  const [isOpenImageModal, setIsOpenImageModal] = useState<boolean>(false)
 
   useEffect(() => {
     const fetch = async () => {
@@ -225,12 +227,18 @@ const Page: FC = () => {
                         <td>
                           {comment.image && (
                             <div
+                              aria-hidden={true}
                               style={{
                                 backgroundImage: `url(${comment.image})`,
                                 backgroundRepeat: "no-repeat",
                                 backgroundSize: "contain",
+                                cursor: "pointer",
                                 height: "4rem",
                                 width: "4rem",
+                              }}
+                              onClick={() => {
+                                setSelectedImage(comment.image)
+                                setIsOpenImageModal(true)
                               }}
                             />
                           )}
@@ -307,6 +315,26 @@ const Page: FC = () => {
                     setComments(comments)
                     setEditingComment(undefined)
                     setIsOpenComentModal(false)
+                  }}
+                />
+              </Modal>
+              <Modal
+                isOpen={isOpenImageModal}
+                onClose={() => {
+                  setIsOpenImageModal(false)
+                  setSelectedImage(undefined)
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: "#333",
+                    backgroundImage: `url(${selectedImage})`,
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "contain",
+                    minHeight: "80vh",
+                    height: "100%",
+                    width: "100%",
                   }}
                 />
               </Modal>
