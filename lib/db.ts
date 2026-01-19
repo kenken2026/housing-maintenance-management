@@ -38,7 +38,7 @@ const createTable = async (database) => {
     longitude REAL NOT NULL CHECK (longitude BETWEEN -180 AND 180),
     altitude  REAL,
 
-    teamId INTEGER,
+    teamId INTEGER NOT NULL,
 
     floorCount INTEGER NOT NULL DEFAULT 1 CHECK (floorCount > 0),
     roomCount  INTEGER NOT NULL DEFAULT 1 CHECK (roomCount  > 0),
@@ -55,6 +55,22 @@ const createTable = async (database) => {
   )
 
   await database.execute(
+    `CREATE TABLE IF NOT EXISTS inspects(
+    id INTEGER PRIMARY KEY,
+    description TEXT,
+
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now')),
+
+    houseId INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'in_progress',
+    payload JSON,
+
+    FOREIGN KEY (houseId) REFERENCES houses(id) ON DELETE CASCADE
+    )`
+  )
+
+  await database.execute(
     `CREATE TABLE IF NOT EXISTS comments(
     id INTEGER PRIMARY KEY,
 
@@ -65,30 +81,16 @@ const createTable = async (database) => {
     longitude REAL NOT NULL CHECK (longitude BETWEEN -180 AND 180),
     altitude  REAL,
 
-    houseId INTEGER,
+    houseId INTEGER NOT NULL,
+    inspectId INTEGER,
 
     body TEXT,
     image TEXT,
     uname TEXT,
     uid TEXT,
 
-    FOREIGN KEY (houseId) REFERENCES houses(id) ON DELETE CASCADE
-    )`
-  )
-
-  await database.execute(
-    `CREATE TABLE IF NOT EXISTS inspects(
-    id INTEGER PRIMARY KEY,
-    description TEXT,
-
-    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
-    updatedAt TEXT NOT NULL DEFAULT (datetime('now')),
-
-    houseId INTEGER,
-    status TEXT NOT NULL DEFAULT 'in_progress',
-    payload JSON,
-
-    FOREIGN KEY (houseId) REFERENCES houses(id) ON DELETE CASCADE
+    FOREIGN KEY (houseId) REFERENCES houses(id) ON DELETE CASCADE,
+    FOREIGN KEY (inspectId) REFERENCES inspects(id) ON DELETE CASCADE
     )`
   )
 }
