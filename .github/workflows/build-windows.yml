@@ -2,6 +2,8 @@ name: Tauri v2 Windows Build
 
 on:
   workflow_dispatch:
+  push:
+    tags: ["v*.*.*"]
 
 jobs:
   build:
