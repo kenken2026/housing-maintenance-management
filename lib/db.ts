@@ -11,11 +11,11 @@ export const initializeDB = async (): Promise<Database> => {
     const dbPath = dir + "/housing-maintanance-management.db"
     dbInstance = await Database.load(`sqlite:${dbPath}`)
     await createTable(dbInstance)
-
     return dbInstance
   } catch (error: unknown) {
     if (error instanceof Error)
       await message(`${error.message}:\n${error.stack}`, { title: error.name })
+    else await message(`${error}`, { title: "Database error" })
     throw error
   }
 }
