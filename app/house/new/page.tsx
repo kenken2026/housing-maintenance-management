@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { Button, Form, Input, Label } from "components/elements/form"
 import { MarkingMap } from "components/features/marking-map"
 import { houseModel } from "lib/models/house"
-import { fetchAltitude } from "lib/geo"
+import { fetchAltitude, fetchPositionByAddress } from "lib/geo"
 
 type NewHouseInput = {
   name: string
@@ -25,12 +25,13 @@ const Page: FC = () => {
   const { team } = useTeamState()
   const [newHouse, setNewHouse] = useState<NewHouseInput>({
     name: "",
-    latitude: 135.6809591,
+    latitude: 35.6809591,
     longitude: 139.7673068,
     floorCount: 3,
     roomCount: 3,
     stepCount: 1,
   })
+  const [address, setAddress] = useState<string>("")
 
   useEffect(() => {
     const fetch = async () => {
@@ -113,6 +114,10 @@ const Page: FC = () => {
               required
             />
             <MarkingMap
+              initialPosition={{
+                latitude: newHouse.latitude,
+                longitude: newHouse.longitude,
+              }}
               onChangePosition={(position) =>
                 setNewHouse({
                   ...newHouse,
@@ -121,6 +126,23 @@ const Page: FC = () => {
                 })
               }
             />
+            <div style={{ display: "flex", gap: ".5rem" }}>
+              <Input
+                placeholder="住所で調べる"
+                value={address}
+                onChange={({ target: { value } }) => setAddress(value)}
+              />
+              <Button
+                type="button"
+                disabled={address.length == 0}
+                onClick={async () => {
+                  const position = await fetchPositionByAddress({ address })
+                  if (position) setNewHouse({ ...newHouse, ...position })
+                }}
+              >
+                検索
+              </Button>
+            </div>
             <Label>緯度</Label>
             <Input
               type="number"

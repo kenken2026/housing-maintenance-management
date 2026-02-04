@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type ComponentProps, type FC } from "react"
+import { useEffect, useState, type ComponentProps, type FC } from "react"
 import { MapContainer, TileLayer, Marker } from "react-leaflet"
 import { LatLng, icon } from "leaflet"
 import "leaflet/dist/leaflet.css"
@@ -17,6 +17,14 @@ export const MarkingMap: FC<
       ? new LatLng(initialPosition.latitude, initialPosition.longitude)
       : new LatLng(35.6809591, 139.7673068)
   )
+  useEffect(() => {
+    if (initialPosition) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPosition(
+        new LatLng(initialPosition.latitude, initialPosition.longitude)
+      )
+    }
+  }, [initialPosition])
 
   return (
     <div style={{ height: "100vw", maxHeight: "24rem", ...style }} {...props}>
