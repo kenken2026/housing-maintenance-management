@@ -75,6 +75,69 @@ pnpm tauri build
 └── public/            # 静的ファイル
 ```
 
+## データベース構成
+
+```mermaid
+erDiagram
+
+    teams {
+        INTEGER id PK
+        TEXT name
+        TEXT description
+        TEXT createdAt
+        TEXT updatedAt
+    }
+
+    houses {
+        INTEGER id PK
+        TEXT name
+        TEXT description
+        TEXT createdAt
+        TEXT updatedAt
+        REAL latitude
+        REAL longitude
+        REAL altitude
+        INTEGER teamId FK
+        INTEGER floorCount
+        INTEGER roomCount
+        INTEGER stepCount
+        TEXT uid
+        JSON floorInformation
+        JSON exteriorInformation
+        JSON checkListTemplate
+    }
+
+    inspects {
+        INTEGER id PK
+        TEXT description
+        TEXT createdAt
+        TEXT updatedAt
+        INTEGER houseId FK
+        TEXT status
+        JSON payload
+    }
+
+    comments {
+        INTEGER id PK
+        TEXT createdAt
+        TEXT updatedAt
+        REAL latitude
+        REAL longitude
+        REAL altitude
+        INTEGER houseId FK
+        INTEGER inspectId FK
+        TEXT body
+        TEXT image
+        TEXT uname
+        TEXT uid
+    }
+
+    teams ||--o{ houses : has
+    houses ||--o{ inspects : has
+    houses ||--o{ comments : has
+    inspects ||--o{ comments : has
+```
+
 ## ライセンス
 
 All rights reserved.
