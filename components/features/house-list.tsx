@@ -15,7 +15,7 @@ import { houseModel } from "lib/models/house"
 export const HouseList: FC<{ team: Team }> = ({ team }) => {
   const router = useRouter()
   const [houses, setHouses] = useState<House[]>([])
-  const [hoveredHouseId, setHoveredHouseId] = useState<string>()
+  const [hoveredHouseId, setHoveredHouseId] = useState<number>()
 
   useEffect(() => {
     const fetchHouses = async () => {
@@ -35,7 +35,11 @@ export const HouseList: FC<{ team: Team }> = ({ team }) => {
         </div>
         <div style={{ display: "flex", gap: ".5rem" }}>
           {houses.length > 0 && (
-            <MultiMarkerMap markers={houses} hoveredMarkerId={hoveredHouseId} style={{ width: "100%" }} />
+            <MultiMarkerMap
+              markers={houses}
+              hoveredMarkerId={hoveredHouseId}
+              style={{ width: "100%" }}
+            />
           )}
           <div style={{ minWidth: "16rem", overflow: "scroll" }}>
             {houses.map((house) => (

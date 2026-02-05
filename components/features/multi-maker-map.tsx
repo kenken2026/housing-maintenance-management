@@ -1,6 +1,12 @@
 "use client"
 
-import { useEffect, useRef, useState, type ComponentProps, type FC } from "react"
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type FC,
+} from "react"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import { LatLng, icon, type Marker as LeafletMarker } from "leaflet"
 import "leaflet/dist/leaflet.css"
@@ -41,7 +47,7 @@ const HoverableMarker: FC<{
 const MultiMarkerMap: FC<
   ComponentProps<"div"> & {
     markers: House[]
-    hoveredMarkerId?: string
+    hoveredMarkerId?: number
   }
 > = ({ markers, hoveredMarkerId, style, ...props }) => {
   const [position, setPosition] = useState<LatLng>(getCenterLatLng(markers))
