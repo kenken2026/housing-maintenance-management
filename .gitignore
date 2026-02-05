@@ -42,3 +42,5 @@ lib-cov
 .env
 
 out/
+
+next-env.d.ts
