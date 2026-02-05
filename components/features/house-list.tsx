@@ -15,6 +15,7 @@ import { houseModel } from "lib/models/house"
 export const HouseList: FC<{ team: Team }> = ({ team }) => {
   const router = useRouter()
   const [houses, setHouses] = useState<House[]>([])
+  const [hoveredHouseId, setHoveredHouseId] = useState<string>()
 
   useEffect(() => {
     const fetchHouses = async () => {
@@ -32,19 +33,27 @@ export const HouseList: FC<{ team: Team }> = ({ team }) => {
         <div>
           <Button onClick={() => router.push("/house/new")}>新規作成</Button>
         </div>
-        {houses.length > 0 && <MultiMarkerMap markers={houses} />}
-        <table>
-          <tbody>
+        <div style={{ display: "flex", gap: ".5rem" }}>
+          {houses.length > 0 && (
+            <MultiMarkerMap markers={houses} hoveredMarkerId={hoveredHouseId} style={{ width: "100%" }} />
+          )}
+          <div style={{ minWidth: "16rem", overflow: "scroll" }}>
             {houses.map((house) => (
-              <tr key={house.id}>
-                <td>
+              <div
+                key={house.id}
+                onMouseEnter={() => setHoveredHouseId(house.id)}
+                onMouseLeave={() => setHoveredHouseId(undefined)}
+              >
+                <div style={{ fontWeight: "bold" }}>
                   <Link href={`/house?id=${house.id}`}>{house.name}</Link>
-                </td>
-                <td>{new Date(house.createdAt).toLocaleDateString()}</td>
-              </tr>
+                </div>
+                <div style={{ fontSize: ".75rem" }}>
+                  {new Date(house.createdAt).toLocaleDateString()}
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </div>
       </Card>
     </>
   )
