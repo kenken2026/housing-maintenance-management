@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1770274860331" clover="3.2.0">
+  <project timestamp="1770274860331" name="All files">
+    <metrics statements="25" coveredstatements="25" conditionals="8" coveredconditionals="8" methods="10" coveredmethods="10" elements="43" coveredelements="43" complexity="0" loc="25" ncloc="25" packages="3" files="5" classes="5"/>
+    <package name="lib">
+      <metrics statements="18" coveredstatements="18" conditionals="6" coveredconditionals="6" methods="6" coveredmethods="6"/>
+      <file name="geo.ts" path="/Users/kixixixixi/Documents/Develop/Project/kenken/housing-maintenance-management/lib/geo.ts">
+        <metrics statements="12" coveredstatements="12" conditionals="6" coveredconditionals="6" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="13" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="35" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="54" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+      </file>
+      <file name="store.ts" path="/Users/kixixixixi/Documents/Develop/Project/kenken/housing-maintenance-management/lib/store.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="5" type="stmt"/>
+      </file>
+      <file name="text.ts" path="/Users/kixixixixi/Documents/Develop/Project/kenken/housing-maintenance-management/lib/text.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="174" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="168" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.constants">
+      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="check-list.ts" path="/Users/kixixixixi/Documents/Develop/Project/kenken/housing-maintenance-management/lib/constants/check-list.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.models">
+      <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="4"/>
+      <file name="index.ts" path="/Users/kixixixixi/Documents/Develop/Project/kenken/housing-maintenance-management/lib/models/index.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="4"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="9" count="4" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="18" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="22" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
