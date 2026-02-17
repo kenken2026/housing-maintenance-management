@@ -73,6 +73,8 @@ type Check = CheckTemplate & {
 
 type UnitCheck = { uid: string; checkList: Check[] }
 
+type Marker = { id: name; latitude: number; longitude: number; name: string }
+
 // Common
 
 type MaybePromise<T> = T | Promise<T>

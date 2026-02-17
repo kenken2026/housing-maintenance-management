@@ -38,7 +38,10 @@ export const HouseList: FC<{ team: Team }> = ({ team }) => {
             <MultiMarkerMap
               markers={houses}
               hoveredMarkerId={hoveredHouseId}
-              style={{ width: "100%" }}
+              style={{ minHeight: "32rem", width: "100%" }}
+              onMarkerClick={({ id }) => {
+                router.push(`/house?id=${id}`)
+              }}
             />
           )}
           <div style={{ minWidth: "16rem", overflow: "scroll" }}>

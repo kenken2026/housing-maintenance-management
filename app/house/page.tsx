@@ -3,7 +3,7 @@ import { ask } from "@tauri-apps/plugin-dialog"
 import { Card } from "components/elements"
 import { useSearchParams, notFound } from "next/navigation"
 import { useTeamState } from "lib/store"
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 import { houseModel } from "lib/models/house"
 import { Button } from "components/elements/form"
 import { UnitList } from "components/features/unit-list"
@@ -12,6 +12,7 @@ import { Modal } from "components/elements/modal"
 import { InspectForm } from "components/features/inspect-form"
 import { commentModel } from "lib/models/comment"
 import { CommentForm } from "components/features/comment-form"
+import MultiMarkerMap from "components/features/multi-maker-map"
 
 const Page: FC = () => {
   const { team } = useTeamState()
@@ -52,6 +53,17 @@ const Page: FC = () => {
     await houseModel().delete(id)
     window.history.back()
   }
+
+  const commentMarkers = useMemo(
+    () =>
+      (comments ?? [])
+        .filter((c) => c.latitude && c.longitude)
+        .map((c) => ({
+          ...c,
+          name: `${new Date(c.createdAt).toLocaleDateString()}\n(${c.body})`,
+        })),
+    [comments]
+  )
   return (
     <>
       {house && (
@@ -200,6 +212,18 @@ const Page: FC = () => {
           {comments && (
             <div>
               <h3>記載事項</h3>
+              {commentMarkers.length > 0 && (
+                <div style={{ display: "flex" }}>
+                  <MultiMarkerMap
+                    markers={commentMarkers}
+                    style={{ minHeight: "12rem", width: "100%" }}
+                    onMarkerClick={({ id }) => {
+                      setEditingComment(comments.find((c) => c.id == id))
+                      setIsOpenComentModal(true)
+                    }}
+                  />
+                </div>
+              )}
               <div style={{ padding: ".5rem" }}>
                 <table
                   style={{

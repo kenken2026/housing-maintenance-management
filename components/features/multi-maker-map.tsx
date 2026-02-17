@@ -10,13 +10,13 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import { LatLng, icon, type Marker as LeafletMarker } from "leaflet"
 import "leaflet/dist/leaflet.css"
-import Link from "next/link"
 import { ChangeMapCenter, getCenterLatLng } from "lib/map"
 
 const HoverableMarker: FC<{
-  marker: House
+  marker: Marker
   isHovered: boolean
-}> = ({ marker, isHovered }) => {
+  onMarkerClick: (args: { id: number }) => void
+}> = ({ marker, isHovered, onMarkerClick }) => {
   const markerRef = useRef<LeafletMarker>(null)
   useEffect(() => {
     if (!markerRef.current) return
@@ -38,7 +38,17 @@ const HoverableMarker: FC<{
       })}
     >
       <Popup>
-        <Link href={`/house?id=${marker.id}`}>{marker.name}</Link>
+        <div
+          aria-hidden={true}
+          onClick={() => onMarkerClick({ id: marker.id })}
+          style={{ cursor: "pointer" }}
+        >
+          {marker.name.split("\n").map((n, i) => (
+            <div key={i} style={{ color: "#44a", textAlign: "center" }}>
+              {n}
+            </div>
+          ))}
+        </div>
       </Popup>
     </Marker>
   )
@@ -46,10 +56,11 @@ const HoverableMarker: FC<{
 
 const MultiMarkerMap: FC<
   ComponentProps<"div"> & {
-    markers: House[]
+    markers: Marker[]
     hoveredMarkerId?: number
+    onMarkerClick: (args: { id: number }) => void
   }
-> = ({ markers, hoveredMarkerId, style, ...props }) => {
+> = ({ markers, hoveredMarkerId, style, onMarkerClick, ...props }) => {
   const [position, setPosition] = useState<LatLng>(getCenterLatLng(markers))
   useEffect(() => {
     if (markers.length > 0) return
@@ -60,7 +71,7 @@ const MultiMarkerMap: FC<
     })
   }, [markers])
   return (
-    <div style={{ minHeight: "32rem", ...style }} {...props}>
+    <div style={{ ...style }} {...props}>
       {position && (
         <MapContainer
           center={position}
@@ -78,6 +89,7 @@ const MultiMarkerMap: FC<
               key={marker.id}
               marker={marker}
               isHovered={hoveredMarkerId === marker.id}
+              onMarkerClick={onMarkerClick}
             />
           ))}
           <ChangeMapCenter position={position} />
