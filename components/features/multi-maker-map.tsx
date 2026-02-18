@@ -10,7 +10,7 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import { LatLng, icon, type Marker as LeafletMarker } from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { ChangeMapCenter, getCenterLatLng } from "lib/map"
+import { ChangeMapCenter, FitBoundsToMarkers, getCenterLatLng } from "lib/map"
 
 const HoverableMarker: FC<{
   marker: Marker
@@ -93,6 +93,7 @@ const MultiMarkerMap: FC<
             />
           ))}
           <ChangeMapCenter position={position} />
+          {markers.length > 0 && <FitBoundsToMarkers markers={markers} />}
         </MapContainer>
       )}
     </div>

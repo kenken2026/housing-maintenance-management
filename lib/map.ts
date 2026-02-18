@@ -1,4 +1,5 @@
-import { LatLng } from "leaflet"
+import { LatLng, LatLngBounds } from "leaflet"
+import { useEffect } from "react"
 import { useMap } from "react-leaflet"
 
 export const ChangeMapCenter = ({ position }: { position: LatLng }) => {
@@ -21,3 +22,19 @@ export const getCenterLatLng = (positions: Position[]): LatLng =>
     calcCenter(positions.map((p) => p.latitude)),
     calcCenter(positions.map((p) => p.longitude))
   )
+
+export const FitBoundsToMarkers = ({
+  markers,
+}: {
+  markers: Position[]
+}) => {
+  const map = useMap()
+  useEffect(() => {
+    if (markers.length === 0) return
+    const bounds = new LatLngBounds(
+      markers.map((m) => new LatLng(m.latitude, m.longitude))
+    )
+    map.fitBounds(bounds, { padding: [40, 40] })
+  }, [markers, map])
+  return null
+}
