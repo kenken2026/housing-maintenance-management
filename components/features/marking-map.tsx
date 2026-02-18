@@ -24,7 +24,8 @@ export const MarkingMap: FC<
         new LatLng(initialPosition.latitude, initialPosition.longitude)
       )
     }
-  }, [initialPosition])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPosition?.latitude, initialPosition?.longitude])
 
   return (
     <div style={{ height: "100vw", maxHeight: "24rem", ...style }} {...props}>
