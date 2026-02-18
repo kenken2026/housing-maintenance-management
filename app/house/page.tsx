@@ -13,8 +13,9 @@ import { InspectForm } from "components/features/inspect-form"
 import { commentModel } from "lib/models/comment"
 import { CommentForm } from "components/features/comment-form"
 import MultiMarkerMap from "components/features/multi-maker-map"
+import { HouseSchematic } from "components/features/house-schematic"
 
-const Page: FC = () => {
+const HousePage: FC = () => {
   const { team } = useTeamState()
   const searchParams = useSearchParams()
   const id = Number(searchParams.get("id"))
@@ -374,6 +375,12 @@ const Page: FC = () => {
               </Modal>
             </div>
           )}
+          <h3>構造</h3>
+          <HouseSchematic
+            floorCount={house.floorCount}
+            roomCount={house.roomCount}
+            stepCount={house.stepCount}
+          />
           <h3>ユニット一覧</h3>
           <UnitList house={house} />
         </Card>
@@ -382,4 +389,4 @@ const Page: FC = () => {
   )
 }
 
-export default Page
+export default HousePage

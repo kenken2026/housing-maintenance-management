@@ -9,6 +9,7 @@ import { Button, Form, Input, Label } from "components/elements/form"
 import { MarkingMap } from "components/features/marking-map"
 import { houseModel } from "lib/models/house"
 import { fetchAltitude, fetchPositionByAddress } from "lib/geo"
+import { HouseSchematic } from "components/features/house-schematic"
 
 type NewHouseInput = {
   name: string
@@ -113,6 +114,7 @@ const Page: FC = () => {
               }
               required
             />
+            <HouseSchematic {...newHouse} />
             <MarkingMap
               initialPosition={{
                 latitude: newHouse.latitude,

@@ -19,7 +19,6 @@ export const MarkingMap: FC<
   )
   useEffect(() => {
     if (initialPosition) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPosition(
         new LatLng(initialPosition.latitude, initialPosition.longitude)
       )
