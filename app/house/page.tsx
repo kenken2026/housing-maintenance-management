@@ -376,11 +376,7 @@ const HousePage: FC = () => {
             </div>
           )}
           <h3>構造</h3>
-          <HouseSchematic
-            floorCount={house.floorCount}
-            roomCount={house.roomCount}
-            stepCount={house.stepCount}
-          />
+          <HouseSchematic {...house} />
           <h3>ユニット一覧</h3>
           <UnitList house={house} />
         </Card>

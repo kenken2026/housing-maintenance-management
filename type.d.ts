@@ -6,6 +6,12 @@ type Team = {
   updatedAt: string
 }
 
+type FloorInformation = {
+  floor: number
+  roomCount: number
+  stepCount: number
+}[]
+
 type House = {
   id: number
   teamId: number
@@ -21,7 +27,7 @@ type House = {
   updatedAt: string
   uid?: string
 
-  floorInformation?: object
+  floorInformation?: FloorInformation
   exteriorInformation?: object
   checkListTemplate?: object
 }

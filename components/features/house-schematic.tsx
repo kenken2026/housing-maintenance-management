@@ -19,11 +19,21 @@ export const HouseSchematic: FC<{
   floorCount: number
   roomCount: number
   stepCount: number
-}> = ({ floorCount, roomCount, stepCount }) => {
-  const totalColumns = roomCount + stepCount
-  const stairs = stairColumns(totalColumns, stepCount)
-  const svgWidth = LABEL_W + totalColumns * CELL_W + 1
-  const svgHeight = floorCount * CELL_H + GROUND_H + 1
+  floorInformation?: FloorInformation
+}> = ({ floorCount, roomCount, stepCount, floorInformation }) => {
+  const floorData = floorInformation
+    ? [...floorInformation].sort((a, b) => b.floor - a.floor)
+    : Array.from({ length: floorCount }, (_, i) => ({
+        floor: floorCount - i,
+        roomCount,
+        stepCount,
+      }))
+
+  const maxTotalColumns = Math.max(
+    ...floorData.map((f) => f.roomCount + f.stepCount)
+  )
+  const svgWidth = LABEL_W + maxTotalColumns * CELL_W + 1
+  const svgHeight = floorData.length * CELL_H + GROUND_H + 1
 
   return (
     <svg
@@ -31,11 +41,12 @@ export const HouseSchematic: FC<{
       height={svgHeight}
       style={{ display: "block", overflow: "visible" }}
     >
-      {Array.from({ length: floorCount }, (_, fi) => {
-        const floor = floorCount - fi
+      {floorData.map((fd, fi) => {
+        const totalColumns = fd.roomCount + fd.stepCount
+        const stairs = stairColumns(totalColumns, fd.stepCount)
         const y = fi * CELL_H
         return (
-          <g key={floor}>
+          <g key={fd.floor}>
             <text
               x={LABEL_W / 2}
               y={y + CELL_H / 2 + FONT_SIZE / 3}
@@ -43,7 +54,7 @@ export const HouseSchematic: FC<{
               fontSize={FONT_SIZE}
               fill="#555"
             >
-              {floor}F
+              {fd.floor}F
             </text>
             {Array.from({ length: totalColumns }, (_, ci) => {
               const isStair = stairs.has(ci)
@@ -88,8 +99,8 @@ export const HouseSchematic: FC<{
       })}
       <rect
         x={LABEL_W}
-        y={floorCount * CELL_H}
-        width={totalColumns * CELL_W}
+        y={floorData.length * CELL_H}
+        width={maxTotalColumns * CELL_W}
         height={GROUND_H}
         fill="#c8b99a"
         stroke="#aaa"

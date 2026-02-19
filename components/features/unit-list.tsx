@@ -75,7 +75,73 @@ export const UnitList: FC<{
       <UnitGroupWrapper>
         <h3>ユニット</h3>
         {house.floorInformation ? (
-          <></>
+          <>
+            {[...house.floorInformation]
+              .sort((a, b) => a.floor - b.floor)
+              .map((fi) => {
+                const i = fi.floor - 1
+                return (
+                  <UnitGroupWrapper key={fi.floor}>
+                    <h4>{fi.floor}階</h4>
+                    <UnitGroup>
+                      {Array(fi.roomCount)
+                        .fill(0)
+                        .map((_, j) => (
+                          <UnitBox
+                            house={house}
+                            key={j}
+                            unit={{
+                              uid: `f${i}r${j}`,
+                              name: `部屋${j + 1}`,
+                            }}
+                            unitCheck={(inspect?.payload as UnitCheck[])?.find(
+                              (uc) => uc.uid == `f${i}r${j}`
+                            )}
+                            onChange={
+                              onChange &&
+                              ((uc) => {
+                                const payload = (inspect?.payload ??
+                                  []) as UnitCheck[]
+                                onChange?.([
+                                  ...payload.filter(
+                                    (c) => c.uid != `f${i}r${j}`
+                                  ),
+                                  uc,
+                                ])
+                              })
+                            }
+                          />
+                        ))}
+                      {Array(fi.stepCount)
+                        .fill(0)
+                        .map((_, j) => (
+                          <UnitBox
+                            key={j}
+                            house={house}
+                            unit={{ uid: `f${i}s${j}`, name: `階段${j + 1}` }}
+                            unitCheck={(inspect?.payload as UnitCheck[])?.find(
+                              (uc) => uc.uid == `f${i}s${j}`
+                            )}
+                            onChange={
+                              onChange &&
+                              ((uc) => {
+                                const payload = (inspect?.payload ??
+                                  []) as UnitCheck[]
+                                onChange?.([
+                                  ...payload.filter(
+                                    (c) => c.uid != `f${i}s${j}`
+                                  ),
+                                  uc,
+                                ])
+                              })
+                            }
+                          />
+                        ))}
+                    </UnitGroup>
+                  </UnitGroupWrapper>
+                )
+              })}
+          </>
         ) : (
           <>
             {Array(house.floorCount)

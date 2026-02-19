@@ -19,7 +19,19 @@ type NewHouseInput = {
   floorCount: number
   roomCount: number
   stepCount: number
+  floorInformation: FloorInformation
 }
+
+const buildFloorInformation = (
+  floorCount: number,
+  roomCount: number,
+  stepCount: number
+): FloorInformation =>
+  Array.from({ length: floorCount }, (_, i) => ({
+    floor: i + 1,
+    roomCount,
+    stepCount,
+  }))
 
 const Page: FC = () => {
   const router = useRouter()
@@ -31,6 +43,7 @@ const Page: FC = () => {
     floorCount: 3,
     roomCount: 3,
     stepCount: 1,
+    floorInformation: buildFloorInformation(3, 3, 1),
   })
   const [address, setAddress] = useState<string>("")
 
@@ -48,6 +61,57 @@ const Page: FC = () => {
     fetch()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newHouse.latitude, newHouse.longitude])
+
+  const handleFloorCount = (count: number) => {
+    const fi = newHouse.floorInformation
+    const newFi: FloorInformation =
+      count > fi.length
+        ? [
+            ...fi,
+            ...Array.from({ length: count - fi.length }, (_, i) => ({
+              floor: fi.length + i + 1,
+              roomCount: newHouse.roomCount,
+              stepCount: newHouse.stepCount,
+            })),
+          ]
+        : fi.slice(0, count)
+    setNewHouse({ ...newHouse, floorCount: count, floorInformation: newFi })
+  }
+
+  const handleRoomCount = (count: number) => {
+    setNewHouse({
+      ...newHouse,
+      roomCount: count,
+      floorInformation: newHouse.floorInformation.map((f) => ({
+        ...f,
+        roomCount: count,
+      })),
+    })
+  }
+
+  const handleStepCount = (count: number) => {
+    setNewHouse({
+      ...newHouse,
+      stepCount: count,
+      floorInformation: newHouse.floorInformation.map((f) => ({
+        ...f,
+        stepCount: count,
+      })),
+    })
+  }
+
+  const handleFloorField = (
+    floor: number,
+    field: "roomCount" | "stepCount",
+    value: number
+  ) => {
+    setNewHouse({
+      ...newHouse,
+      floorInformation: newHouse.floorInformation.map((f) =>
+        f.floor === floor ? { ...f, [field]: value } : f
+      ),
+    })
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -90,31 +154,67 @@ const Page: FC = () => {
               placeholder="階数"
               value={newHouse.floorCount}
               onChange={({ target: { value } }) =>
-                setNewHouse({ ...newHouse, floorCount: Number(value) })
+                handleFloorCount(Number(value))
               }
               required
             />
-            <Label>部屋数</Label>
+            <Label>部屋数（全階共通）</Label>
             <Input
               type="number"
               placeholder="階ごとの部屋の数"
               value={newHouse.roomCount}
               onChange={({ target: { value } }) =>
-                setNewHouse({ ...newHouse, roomCount: Number(value) })
+                handleRoomCount(Number(value))
               }
               required
             />
-            <Label>階段数</Label>
+            <Label>階段数（全階共通）</Label>
             <Input
               type="number"
               placeholder="階ごとの階段の数"
               value={newHouse.stepCount}
               onChange={({ target: { value } }) =>
-                setNewHouse({ ...newHouse, stepCount: Number(value) })
+                handleStepCount(Number(value))
               }
               required
             />
-            <HouseSchematic {...newHouse} />
+            <Label>各階の設定</Label>
+            <div style={{ display: "flex", flexFlow: "column", gap: ".25rem" }}>
+              {[...newHouse.floorInformation]
+                .sort((a, b) => b.floor - a.floor)
+                .map((fi) => (
+                  <div
+                    key={fi.floor}
+                    style={{ display: "flex", gap: ".5rem", alignItems: "center" }}
+                  >
+                    <span style={{ minWidth: "3rem", fontSize: ".875rem" }}>
+                      {fi.floor}階
+                    </span>
+                    <span style={{ fontSize: ".875rem" }}>部屋</span>
+                    <Input
+                      type="number"
+                      value={fi.roomCount}
+                      onChange={({ target: { value } }) =>
+                        handleFloorField(fi.floor, "roomCount", Number(value))
+                      }
+                      style={{ width: "4rem" }}
+                    />
+                    <span style={{ fontSize: ".875rem" }}>階段</span>
+                    <Input
+                      type="number"
+                      value={fi.stepCount}
+                      onChange={({ target: { value } }) =>
+                        handleFloorField(fi.floor, "stepCount", Number(value))
+                      }
+                      style={{ width: "4rem" }}
+                    />
+                  </div>
+                ))}
+            </div>
+            <HouseSchematic
+              {...newHouse}
+              floorInformation={newHouse.floorInformation}
+            />
             <MarkingMap
               initialPosition={{
                 latitude: newHouse.latitude,
