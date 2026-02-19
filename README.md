@@ -16,10 +16,11 @@
 |---------|------|
 | フレームワーク | Next.js 16 + React 19 |
 | 言語 | TypeScript / Rust |
-| デスクトップ | Tauri 2.9 |
+| デスクトップ | Tauri 2.x |
 | 状態管理 | Zustand |
 | データベース | SQLite |
 | 地図 | Leaflet |
+| テスト | Vitest + React Testing Library |
 
 ## 必要要件
 
@@ -59,6 +60,7 @@ pnpm tauri build
 | `pnpm lint` | ESLint実行 |
 | `pnpm format` | Prettier整形 |
 | `pnpm typecheck` | 型チェック |
+| `pnpm test` | Vitestテスト実行 |
 
 ## ディレクトリ構成
 
