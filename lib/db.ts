@@ -1,26 +1,55 @@
-import Database from "@tauri-apps/plugin-sql"
-import { appDataDir } from "@tauri-apps/api/path"
-import { message } from "@tauri-apps/plugin-dialog"
-
-export let dbInstance: Database | undefined = undefined
-
-export const initializeDB = async (): Promise<Database> => {
-  if (dbInstance) return dbInstance
-  try {
-    const dir = await appDataDir()
-    const dbPath = dir + "/housing-maintanance-management.db"
-    dbInstance = await Database.load(`sqlite:${dbPath}`)
-    await createTable(dbInstance)
-    return dbInstance
-  } catch (error: unknown) {
-    if (error instanceof Error)
-      await message(`${error.message}:\n${error.stack}`, { title: error.name })
-    else await message(`${error}`, { title: "Database error" })
-    throw error
-  }
+export interface DBAdapter {
+  select<T>(sql: string, params?: unknown[]): Promise<T>
+  execute(sql: string, params?: unknown[]): Promise<{ lastInsertId: number }>
 }
 
-const createTable = async (database) => {
+export let dbInstance: DBAdapter | undefined = undefined
+
+const isTauri = (): boolean =>
+  typeof window !== "undefined" && "__TAURI_INTERNALS__" in window
+
+export const initializeDB = async (): Promise<DBAdapter> => {
+  if (dbInstance) return dbInstance
+
+  if (isTauri()) {
+    const { default: Database } = await import("@tauri-apps/plugin-sql")
+    const { appDataDir } = await import("@tauri-apps/api/path")
+    const { message } = await import("@tauri-apps/plugin-dialog")
+    try {
+      const dir = await appDataDir()
+      const dbPath = dir + "/housing-maintanance-management.db"
+      const tauriDb = await Database.load(`sqlite:${dbPath}`)
+      await createTable({
+        select: tauriDb.select.bind(tauriDb),
+        execute: async (sql: string, params?: unknown[]) => {
+          const result = await tauriDb.execute(sql, params)
+          return { lastInsertId: result.lastInsertId ?? 0 }
+        },
+      })
+      dbInstance = {
+        select: tauriDb.select.bind(tauriDb),
+        execute: async (sql: string, params?: unknown[]) => {
+          const result = await tauriDb.execute(sql, params)
+          return { lastInsertId: result.lastInsertId ?? 0 }
+        },
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error)
+        await message(`${error.message}:\n${error.stack}`, {
+          title: error.name,
+        })
+      else await message(`${error}`, { title: "Database error" })
+      throw error
+    }
+  } else {
+    const { DexieAdapter } = await import("./dexie-db")
+    dbInstance = new DexieAdapter()
+  }
+
+  return dbInstance
+}
+
+const createTable = async (database: DBAdapter) => {
   await database.execute(
     `CREATE TABLE IF NOT EXISTS teams(
     id INTEGER PRIMARY KEY,
