@@ -36,7 +36,7 @@ jobs:
       - name: Build application
         run: pnpm build
         env:
-          BASE_PATH: "housing-maintenance-management"
+          BASE_PATH: "/housing-maintenance-management"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
