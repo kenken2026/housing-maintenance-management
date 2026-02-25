@@ -1,10 +1,10 @@
-import Database from "@tauri-apps/plugin-sql"
+import type { DBAdapter } from "lib/db"
 
 export const model = <T>({
   db,
   tableName,
 }: {
-  db: Database
+  db: DBAdapter
   tableName: string
 }) => ({
   index: async (): Promise<T[]> =>
