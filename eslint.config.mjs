@@ -6,7 +6,7 @@ import jsxA11y from "eslint-plugin-jsx-a11y"
 
 export default [
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
-  { ignores: [".next", "next-env.d.ts", "next.config.js"] },
+  { ignores: [".next", "out", "src-tauri", "next-env.d.ts", "next.config.js"] },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
