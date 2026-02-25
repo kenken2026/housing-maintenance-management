@@ -7,3 +7,14 @@ export const useTeamState = create<{
   team: undefined,
   setTeam: (team?: Team) => set({ team }),
 }))
+
+export const useLoadinfState = create<{
+  isLoading: boolean
+  loagingMessage?: string
+  setLoadingMessage: (mesasge?: string) => void
+}>((set) => ({
+  isLoading: false,
+  loagingMessage: undefined,
+  setLoadingMessage: (message?: string) =>
+    set({ loagingMessage: message, isLoading: !!message }),
+}))

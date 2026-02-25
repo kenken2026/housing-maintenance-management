@@ -1,6 +1,7 @@
 import { Header } from "components/features/header"
 import "./reset.css"
 import { Main } from "components/main"
+import { Loading } from "components/modules/loading"
 
 export const metadata = {
   title: "公共賃貸住宅維持管理",
@@ -50,6 +51,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             許可は、以下の条件を満たす限りにおいて、無料で繰り返し使用、コピー、変更、マージ、公開、配布、サブライセンス、および/または販売することができます。上記の著作権表示および本許諾表示を、ソフトウェアのすべてのコピーまたは重要な部分に含めること。本ソフトウェアは、明示黙示を問わず、商業利用、特定の目的への適合性、および非侵害性に関する暗黙の保証を含め、いかなる種類の保証も提供しません。著作権者または本ソフトウェアの使用に関与した人物は、いかなる場合も、契約、不法行為またはその他の行為に基づき、ソフトウェアに起因または関連し、またはソフトウェアの使用またはその他の取引に関連して生じた契約外の損害について責任を負うことはありません。
           </p>
         </footer>
+        <Loading />
       </body>
     </html>
   )
