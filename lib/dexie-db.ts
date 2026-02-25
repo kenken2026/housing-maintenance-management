@@ -1,62 +1,10 @@
 import Dexie, { type Table } from "dexie"
 
-interface TeamRecord {
-  id?: number
-  name: string
-  description?: string
-  createdAt: string
-  updatedAt: string
-}
-
-interface HouseRecord {
-  id?: number
-  name: string
-  description?: string
-  latitude: number
-  longitude: number
-  altitude?: number
-  teamId: number
-  floorCount: number
-  roomCount: number
-  stepCount: number
-  uid?: string
-  floorInformation?: string
-  exteriorInformation?: string
-  checkListTemplate?: string
-  createdAt: string
-  updatedAt: string
-}
-
-interface InspectRecord {
-  id?: number
-  description?: string
-  houseId: number
-  status: string
-  payload?: string
-  createdAt: string
-  updatedAt: string
-}
-
-interface CommentRecord {
-  id?: number
-  latitude: number
-  longitude: number
-  altitude?: number
-  houseId: number
-  inspectId?: number
-  body?: string
-  image?: string
-  uname?: string
-  uid?: string
-  createdAt: string
-  updatedAt: string
-}
-
 class HousingDB extends Dexie {
-  teams!: Table<TeamRecord>
-  houses!: Table<HouseRecord>
-  inspects!: Table<InspectRecord>
-  comments!: Table<CommentRecord>
+  teams!: Table<Team>
+  houses!: Table<House>
+  inspects!: Table<Inspect>
+  comments!: Table<Comment>
 
   constructor() {
     super("housing-maintenance-management")
@@ -190,7 +138,12 @@ export class DexieAdapter {
       const table = this.getTable(tableName)
       const setCols = setPart
         .split(",")
-        .map((s) => s.trim().split(/\s*=\s*\?/)[0].trim())
+        .map((s) =>
+          s
+            .trim()
+            .split(/\s*=\s*\?/)[0]
+            .trim()
+        )
         .filter(Boolean)
       const id = params[params.length - 1] as number
       const changes: Record<string, unknown> = {}
