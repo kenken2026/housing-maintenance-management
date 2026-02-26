@@ -7,26 +7,22 @@ import { FC, useEffect, useMemo, useState } from "react"
 import { houseModel } from "lib/models/house"
 import { Button } from "components/elements/form"
 import { UnitList } from "components/features/unit-list"
-import { inspectModel } from "lib/models/inspect"
 import { Modal } from "components/elements/modal"
-import { InspectForm } from "components/features/inspect-form"
 import { commentModel } from "lib/models/comment"
 import { CommentForm } from "components/features/comment-form"
 import MultiMarkerMap from "components/features/multi-maker-map"
 import { HouseSchematic } from "components/features/house-schematic"
 import { isTauri } from "@tauri-apps/api/core"
+import { InspectList } from "components/features/inspect-list"
 
 const HousePage: FC = () => {
   const { team } = useTeamState()
   const searchParams = useSearchParams()
   const id = Number(searchParams.get("id"))
   const [house, setHouse] = useState<House>()
-  const [inspects, setInspects] = useState<Inspect[]>()
   const [comments, setComments] = useState<HouseComment[]>()
-  const [editingInspect, setEditingInspect] = useState<Inspect>()
   const [editingComment, setEditingComment] = useState<HouseComment>()
   const [selectedImage, setSelectedImage] = useState<string>()
-  const [isOpenInspectModal, setIsOpenInspectModal] = useState<boolean>(false)
   const [isOpenCommentModal, setIsOpenComentModal] = useState<boolean>(false)
   const [isOpenImageModal, setIsOpenImageModal] = useState<boolean>(false)
   const { setLoadingMessage } = useLoadinfState()
@@ -39,8 +35,6 @@ const HousePage: FC = () => {
       }
       setLoadingMessage("データを読み込んでいます...")
       setHouse(house)
-      const inspects = await inspectModel().index({ houseId: house.id })
-      setInspects(inspects)
       const comments = await commentModel().index({ houseId: house.id })
       setComments(comments)
       setLoadingMessage(undefined)
@@ -139,89 +133,7 @@ const HousePage: FC = () => {
               </div>
             </div>
           </div>
-          {inspects && (
-            <div>
-              <h3>点検履歴</h3>
-              <div style={{ padding: ".5rem" }}>
-                <table
-                  style={{
-                    borderCollapse: "collapse",
-                    width: "100%",
-                  }}
-                >
-                  <thead>
-                    <tr>
-                      <td>点検日</td>
-                      <td>ステータス</td>
-                      <td>説明</td>
-                      <td>最終更新</td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {inspects.map((inspect) => (
-                      <tr
-                        key={inspect.id}
-                        style={{
-                          borderTop: "solid 2px #eee",
-                          padding: ".25rem",
-                        }}
-                      >
-                        <td>
-                          {new Date(inspect.createdAt).toLocaleDateString()}
-                        </td>
-                        <td>
-                          {inspect.status == "in_progress"
-                            ? "点検中"
-                            : "点検済み"}
-                        </td>
-                        <td>{inspect.description}</td>
-                        <td>{new Date(inspect.updatedAt).toLocaleString()}</td>
-                        <td>
-                          <div
-                            aria-hidden={true}
-                            style={{
-                              color: "#339",
-                              cursor: "pointer",
-                              textDecoration: "underline",
-                            }}
-                            onClick={() => {
-                              setEditingInspect(inspect)
-                              setIsOpenInspectModal(true)
-                            }}
-                          >
-                            修正
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <Button onClick={() => setIsOpenInspectModal(true)}>
-                新たに点検する
-              </Button>
-              <Modal
-                isOpen={isOpenInspectModal}
-                onClose={() => {
-                  setEditingInspect(undefined)
-                  setIsOpenInspectModal(false)
-                }}
-              >
-                <InspectForm
-                  house={house}
-                  inspect={editingInspect}
-                  onSave={async () => {
-                    const inspects = await inspectModel().index({
-                      houseId: house.id,
-                    })
-                    setInspects(inspects)
-                    setIsOpenInspectModal(false)
-                  }}
-                />
-              </Modal>
-            </div>
-          )}
+          <InspectList house={house} />
           {comments && (
             <div>
               <h3>記載事項</h3>
