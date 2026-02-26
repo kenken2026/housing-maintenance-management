@@ -1,9 +1,14 @@
 "use client"
 
-import { FC } from "react"
+import { FC, useState } from "react"
 import Link from "next/link"
+import { Modal } from "components/elements/modal"
+import { Button } from "components/elements/form"
+import { useTeamState } from "lib/store"
 
 export const Header: FC = () => {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const { team, setTeam } = useTeamState()
   return (
     <header
       style={{
@@ -49,10 +54,30 @@ export const Header: FC = () => {
           fontSize: ".75rem",
           cursor: "pointer",
         }}
-        onClick={() => {}}
+        onClick={() => setIsSettingsOpen(true)}
       >
         設定
       </p>
+      <Modal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)}>
+        <section style={{ padding: "1rem" }}>
+          <div style={{ display: "flex", flexFlow: "column", gap: ".5rem" }}>
+            <h2>設定</h2>
+            {team && (
+              <Button
+                onClick={() => {
+                  setTeam(undefined)
+                  setIsSettingsOpen(false)
+                }}
+              >
+                ログアウト
+              </Button>
+            )}
+            <Button type="button" onClick={() => setIsSettingsOpen(false)}>
+              閉じる
+            </Button>
+          </div>
+        </section>
+      </Modal>
     </header>
   )
 }
