@@ -5,6 +5,84 @@ import { InspectForm } from "./inspect-form"
 import { inspectModel } from "lib/models/inspect"
 import { isTauri } from "@tauri-apps/api/core"
 import { ask } from "@tauri-apps/plugin-dialog"
+import { OuteriorUnits, ResidenceUnits } from "lib/constants"
+
+const escapeCSV = (value: string | undefined): string => {
+  const s = value ?? ""
+  return s.includes(",") || s.includes('"') || s.includes("\n")
+    ? `"${s.replace(/"/g, '""')}"`
+    : s
+}
+
+const getUnitName = (uid: string): string => {
+  const exterior = OuteriorUnits.find((u) => u.uid === uid)
+  if (exterior) return exterior.name
+  const residence = ResidenceUnits.find((u) => u.uid === uid)
+  if (residence) return residence.name
+  const roomMatch = uid.match(/^f(\d+)r(\d+)$/)
+  if (roomMatch)
+    return `${parseInt(roomMatch[1]) + 1}階 部屋${parseInt(roomMatch[2]) + 1}`
+  const stairMatch = uid.match(/^f(\d+)s(\d+)$/)
+  if (stairMatch)
+    return `${parseInt(stairMatch[1]) + 1}階 階段${parseInt(stairMatch[2]) + 1}`
+  return uid
+}
+
+const buildCSV = (house: House, inspect: Inspect): string => {
+  const headers = [
+    "棟名",
+    "点検日",
+    "ステータス",
+    "説明",
+    "ユニット",
+    "大項目",
+    "中項目",
+    "小項目",
+    "部位",
+    "詳細",
+    "ランク",
+  ]
+  const status = inspect.status === "in_progress" ? "点検中" : "点検済み"
+  const baseRow = [
+    house.name,
+    new Date(inspect.createdAt).toLocaleDateString(),
+    status,
+    inspect.description ?? "",
+  ]
+
+  const rows: string[][] = []
+  const payload = inspect.payload ?? []
+
+  if (payload.length === 0) {
+    rows.push([...baseRow, "", "", "", "", "", "", ""])
+  } else {
+    for (const unitCheck of payload) {
+      const unitName = getUnitName(unitCheck.uid)
+      if (unitCheck.checkList.length === 0) {
+        rows.push([...baseRow, unitName, "", "", "", "", "", ""])
+      } else {
+        for (const check of unitCheck.checkList) {
+          rows.push([
+            ...baseRow,
+            unitName,
+            check.largeCategory,
+            check.mediumCategory,
+            check.smallCategory,
+            check.part,
+            check.detail,
+            check.rank ?? "",
+          ])
+        }
+      }
+    }
+  }
+
+  const csvRows = [
+    headers.map(escapeCSV).join(","),
+    ...rows.map((r) => r.map(escapeCSV).join(",")),
+  ]
+  return "\uFEFF" + csvRows.join("\r\n")
+}
 
 export const InspectList: FC<{
   house: House
@@ -19,6 +97,17 @@ export const InspectList: FC<{
     }
     fetchInspects()
   }, [house.id])
+
+  const handleCSVExport = (inspect: Inspect) => async () => {
+    const csv = buildCSV(house, inspect)
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `${house.name}_${new Date(inspect.createdAt).toLocaleDateString("sv")}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
   return (
     <>
       {inspects && (
@@ -56,6 +145,17 @@ export const InspectList: FC<{
                     <td>{new Date(inspect.updatedAt).toLocaleString()}</td>
                     <td>
                       <div style={{ display: "flex", gap: ".5rem" }}>
+                        <div
+                          aria-hidden={true}
+                          style={{
+                            color: "#393",
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                          }}
+                          onClick={handleCSVExport(inspect)}
+                        >
+                          CSV出力
+                        </div>
                         <div
                           aria-hidden={true}
                           style={{
