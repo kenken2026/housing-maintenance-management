@@ -19,7 +19,7 @@ export const CheckList: FC<{
       <div>
         <table style={{ fontSize: ".75rem", width: "100%" }}>
           <tbody>
-            {defaultCheckList.map((check) => (
+            {(house.checkListTemplate ?? defaultCheckList).map((check) => (
               <tr key={check.id}>
                 <td>{check.largeCategory}</td>
                 <td>{check.mediumCategory}</td>

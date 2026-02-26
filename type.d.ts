@@ -29,7 +29,7 @@ type House = {
 
   floorInformation?: FloorInformation
   exteriorInformation?: object
-  checkListTemplate?: object
+  checkListTemplate?: CheckTemplate[]
 }
 
 type HouseComment = {
