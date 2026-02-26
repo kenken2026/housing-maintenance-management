@@ -1,3 +1,5 @@
+import { isTauri } from "@tauri-apps/api/core"
+import { message } from "@tauri-apps/plugin-dialog"
 import { ChangeEvent, FC, useRef, useState } from "react"
 
 const parseCSV = (text: string): string[][] => {
@@ -60,7 +62,11 @@ export const CSVFileForm: FC<{
       setRows(parseCSV(result))
       const isValid = onChange?.(result)
       if (isValid === false) {
-        alert("CSVの内容が不正です。")
+        if (isTauri()) {
+          message("CSVの内容が不正です。", "エラー")
+        } else {
+          alert("CSVの内容が不正です。")
+        }
         setRows([])
       }
     }
