@@ -10,6 +10,8 @@ import { MarkingMap } from "components/features/marking-map"
 import { houseModel } from "lib/models/house"
 import { fetchAltitude, fetchPositionByAddress } from "lib/geo"
 import { HouseSchematic } from "components/features/house-schematic"
+import { CSVFileForm } from "components/modules/csv-file-form"
+import { hash } from "lib/text"
 
 type NewHouseInput = {
   name: string
@@ -20,6 +22,29 @@ type NewHouseInput = {
   roomCount: number
   stepCount: number
   floorInformation: FloorInformation
+  checkListTemplate?: CheckTemplate[]
+}
+
+const csvToCheckTemplates = (text: string): CheckTemplate[] => {
+  const lines = text
+    .replace(/^\uFEFF/, "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .split("\n")
+    .filter((l) => l.trim())
+    .slice(1) // skip header
+  return lines.map((line) => {
+    const [largeCategory, mediumCategory, smallCategory, part, detail] =
+      line.split(",")
+    return {
+      id: hash(`${largeCategory}${mediumCategory}${smallCategory}${part}${detail}`),
+      largeCategory,
+      mediumCategory,
+      smallCategory,
+      part,
+      detail,
+    }
+  })
 }
 
 const buildFloorInformation = (
@@ -47,6 +72,7 @@ const Page: FC = () => {
     floorInformation: buildFloorInformation(3, 3, 1),
   })
   const [address, setAddress] = useState<string>("")
+  const [isShownDetail, setIsShownDetail] = useState<boolean>(false)
 
   useEffect(() => {
     const fetch = async () => {
@@ -133,6 +159,27 @@ const Page: FC = () => {
     })
     setLoadingMessage(undefined)
     router.push(`/house?id=${newHouseId}`)
+  }
+
+  const validateCheckListCSV = (text: string): boolean => {
+    const normalized = text
+      .replace(/^\uFEFF/, "")
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+    const lines = normalized.split("\n").filter((l) => l.trim())
+    if (lines.length < 2) return false
+
+    const expectedHeaders = ["大項目", "中項目", "小項目", "各部位", "部所"]
+    const headers = lines[0].split(",")
+    if (
+      headers.length !== expectedHeaders.length ||
+      !expectedHeaders.every((h, i) => headers[i] === h)
+    )
+      return false
+
+    return lines
+      .slice(1)
+      .every((line) => line.split(",").length === expectedHeaders.length)
   }
 
   if (!team) return notFound()
@@ -283,9 +330,29 @@ const Page: FC = () => {
               required
             />
             <div />
-            <div>
-              <Button type="button">詳細設定</Button>
-            </div>
+            {isShownDetail ? (
+              <div>
+                <Label>点検項目</Label>
+                <CSVFileForm
+                  onChange={(text) => {
+                    const isValid = validateCheckListCSV(text)
+                    if (!isValid) return false
+                    setNewHouse({
+                      ...newHouse,
+                      checkListTemplate: csvToCheckTemplates(text),
+                    })
+                    return true
+                  }}
+                />
+              </div>
+            ) : (
+              <div>
+                <Button type="button" onClick={() => setIsShownDetail(true)}>
+                  詳細設定
+                </Button>
+              </div>
+            )}
+
             <div />
             <Button>作成</Button>
           </Form>

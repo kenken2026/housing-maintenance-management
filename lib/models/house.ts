@@ -1,12 +1,18 @@
 import { dbInstance } from "lib/db"
 import { model } from "."
 
-type HouseRaw = Omit<House, "floorInformation"> & { floorInformation?: string }
+type HouseRaw = Omit<House, "floorInformation" | "checkListTemplate"> & {
+  floorInformation?: string
+  checkListTemplate?: string
+}
 
 const parseHouse = (raw: HouseRaw): House => ({
   ...raw,
   floorInformation: raw.floorInformation
     ? (JSON.parse(raw.floorInformation) as FloorInformation)
+    : undefined,
+  checkListTemplate: raw.checkListTemplate
+    ? (JSON.parse(raw.checkListTemplate) as CheckTemplate[])
     : undefined,
 })
 
@@ -42,6 +48,7 @@ export const houseModel = () => {
       roomCount,
       stepCount,
       floorInformation,
+      checkListTemplate,
     }: {
       name: string
       description?: string
@@ -54,11 +61,12 @@ export const houseModel = () => {
       roomCount: number
       stepCount: number
       floorInformation?: FloorInformation
+      checkListTemplate?: CheckTemplate[]
     }): Promise<number> => {
       const result = await db.execute(
         `INSERT INTO houses (
-        name, description, latitude, longitude, altitude, uid, teamId, floorCount, roomCount, stepCount, floorInformation
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        name, description, latitude, longitude, altitude, uid, teamId, floorCount, roomCount, stepCount, floorInformation, checkListTemplate
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           name,
           description ?? null,
@@ -71,6 +79,7 @@ export const houseModel = () => {
           roomCount,
           stepCount,
           floorInformation ? JSON.stringify(floorInformation) : null,
+          checkListTemplate ? JSON.stringify(checkListTemplate) : null,
         ]
       )
       return result.lastInsertId
