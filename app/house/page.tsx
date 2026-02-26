@@ -153,6 +153,7 @@ const HousePage: FC = () => {
                     <tr>
                       <td>点検日</td>
                       <td>ステータス</td>
+                      <td>説明</td>
                       <td>最終更新</td>
                     </tr>
                   </thead>
@@ -173,6 +174,7 @@ const HousePage: FC = () => {
                             ? "点検中"
                             : "点検済み"}
                         </td>
+                        <td>{inspect.description}</td>
                         <td>{new Date(inspect.updatedAt).toLocaleString()}</td>
                         <td>
                           <div
