@@ -2,7 +2,7 @@
 import { ask } from "@tauri-apps/plugin-dialog"
 import { Card } from "components/elements"
 import { useSearchParams, notFound } from "next/navigation"
-import { useTeamState } from "lib/store"
+import { useLoadinfState, useTeamState } from "lib/store"
 import { FC, useEffect, useMemo, useState } from "react"
 import { houseModel } from "lib/models/house"
 import { Button } from "components/elements/form"
@@ -14,6 +14,7 @@ import { commentModel } from "lib/models/comment"
 import { CommentForm } from "components/features/comment-form"
 import MultiMarkerMap from "components/features/multi-maker-map"
 import { HouseSchematic } from "components/features/house-schematic"
+import { isTauri } from "@tauri-apps/api/core"
 
 const HousePage: FC = () => {
   const { team } = useTeamState()
@@ -28,6 +29,7 @@ const HousePage: FC = () => {
   const [isOpenInspectModal, setIsOpenInspectModal] = useState<boolean>(false)
   const [isOpenCommentModal, setIsOpenComentModal] = useState<boolean>(false)
   const [isOpenImageModal, setIsOpenImageModal] = useState<boolean>(false)
+  const { setLoadingMessage } = useLoadinfState()
 
   useEffect(() => {
     const fetch = async () => {
@@ -35,23 +37,31 @@ const HousePage: FC = () => {
       if (!team || house.teamId !== team.id) {
         return notFound()
       }
+      setLoadingMessage("データを読み込んでいます...")
       setHouse(house)
       const inspects = await inspectModel().index({ houseId: house.id })
       setInspects(inspects)
       const comments = await commentModel().index({ houseId: house.id })
       setComments(comments)
+      setLoadingMessage(undefined)
     }
     fetch()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   const handleDelete = async () => {
-    const asked = await ask(
-      `「${house.name}」を削除してもよろしいでしょうか`,
-      "確認"
-    )
-    if (!asked) return
+    if (isTauri()) {
+      const asked = await ask(
+        `「${house.name}」を削除してもよろしいでしょうか`,
+        "確認"
+      )
+      if (!asked) return
+    } else {
+      if (!confirm(`「${house.name}」を削除してもよろしいでしょうか`)) return
+    }
+    setLoadingMessage("削除しています...")
     await houseModel().delete(id)
+    setLoadingMessage(undefined)
     window.history.back()
   }
 
@@ -300,13 +310,18 @@ const HousePage: FC = () => {
                               textDecoration: "underline",
                             }}
                             onClick={async () => {
-                              if (
-                                !(await ask(
-                                  `削除してもよろしいでしょうか`,
-                                  "確認"
-                                ))
-                              )
-                                return
+                              if (isTauri()) {
+                                if (
+                                  !(await ask(
+                                    `削除してもよろしいでしょうか`,
+                                    "確認"
+                                  ))
+                                )
+                                  return
+                              } else {
+                                if (!confirm(`削除してもよろしいでしょうか`))
+                                  return
+                              }
                               await commentModel().delete(comment.id)
                               setComments(
                                 await commentModel().index({

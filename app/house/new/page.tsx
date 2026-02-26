@@ -2,7 +2,7 @@
 
 import { Card } from "components/elements"
 import { notFound } from "next/navigation"
-import { useTeamState } from "lib/store"
+import { useLoadinfState, useTeamState } from "lib/store"
 import { FC, FormEvent, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button, Form, Input, Label } from "components/elements/form"
@@ -36,6 +36,7 @@ const buildFloorInformation = (
 const Page: FC = () => {
   const router = useRouter()
   const { team } = useTeamState()
+  const { setLoadingMessage } = useLoadinfState()
   const [newHouse, setNewHouse] = useState<NewHouseInput>({
     name: "",
     latitude: 35.6809591,
@@ -115,6 +116,7 @@ const Page: FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setLoadingMessage("建物を作成しています...")
 
     const newHouseId = await houseModel().create({
       ...newHouse,
@@ -129,6 +131,7 @@ const Page: FC = () => {
         .slice(0, 2)}`,
       teamId: team.id,
     })
+    setLoadingMessage(undefined)
     router.push(`/house?id=${newHouseId}`)
   }
 
@@ -185,7 +188,11 @@ const Page: FC = () => {
                 .map((fi) => (
                   <div
                     key={fi.floor}
-                    style={{ display: "flex", gap: ".5rem", alignItems: "center" }}
+                    style={{
+                      display: "flex",
+                      gap: ".5rem",
+                      alignItems: "center",
+                    }}
                   >
                     <span style={{ minWidth: "3rem", fontSize: ".875rem" }}>
                       {fi.floor}階

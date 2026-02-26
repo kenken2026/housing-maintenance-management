@@ -3,6 +3,7 @@ import { Button, Form, Input, Label } from "components/elements/form"
 import { commentModel } from "lib/models/comment"
 import { ImageFileForm } from "components/modules/image-file-form"
 import { MarkingMap } from "./marking-map"
+import { useLoadinfState } from "lib/store"
 
 export const CommentForm: FC<{
   house: House
@@ -12,6 +13,7 @@ export const CommentForm: FC<{
   uid?: string
   onSave: Handler<void, void>
 }> = ({ house, comment: initialComment, inspect, uid, uname, onSave }) => {
+  const { setLoadingMessage } = useLoadinfState()
   const [comment, setComment] = useState<HouseComment>({
     latitude: house.latitude,
     longitude: house.longitude,
@@ -21,8 +23,10 @@ export const CommentForm: FC<{
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (comment?.id) {
+      setLoadingMessage("コメントを更新中...")
       await commentModel().update({ ...comment })
     } else {
+      setLoadingMessage("コメントを作成中...")
       await commentModel().create({
         ...comment,
         houseId: house.id,
@@ -32,6 +36,7 @@ export const CommentForm: FC<{
       })
     }
     await onSave()
+    setLoadingMessage(undefined)
   }
   return (
     <div>
