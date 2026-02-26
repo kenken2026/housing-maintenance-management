@@ -4,7 +4,9 @@ import { useMap } from "react-leaflet"
 
 export const ChangeMapCenter = ({ position }: { position: LatLng }) => {
   const map = useMap()
-  map.panTo(position)
+  useEffect(() => {
+    map.panTo(position)
+  }, [position, map])
 
   return null
 }

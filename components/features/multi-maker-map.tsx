@@ -7,7 +7,7 @@ import {
   type ComponentProps,
   type FC,
 } from "react"
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import { LatLng, icon, type Marker as LeafletMarker } from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { ChangeMapCenter, FitBoundsToMarkers, getCenterLatLng } from "lib/map"
@@ -54,6 +54,26 @@ const HoverableMarker: FC<{
   )
 }
 
+const ZoomController: FC<{
+  hoveredMarkerId?: number
+  markers: Marker[]
+}> = ({ hoveredMarkerId, markers }) => {
+  const map = useMap()
+
+  useEffect(() => {
+    if (hoveredMarkerId === undefined) return
+    const marker = markers.find((m) => m.id === hoveredMarkerId)
+    if (marker) {
+      map.flyTo(new LatLng(marker.latitude, marker.longitude), 16, {
+        animate: true,
+        duration: 0.4,
+      })
+    }
+  }, [hoveredMarkerId, markers, map])
+
+  return null
+}
+
 const MultiMarkerMap: FC<
   ComponentProps<"div"> & {
     markers: Marker[]
@@ -94,6 +114,7 @@ const MultiMarkerMap: FC<
           ))}
           <ChangeMapCenter position={position} />
           {markers.length > 0 && <FitBoundsToMarkers markers={markers} />}
+          <ZoomController hoveredMarkerId={hoveredMarkerId} markers={markers} />
         </MapContainer>
       )}
     </div>
