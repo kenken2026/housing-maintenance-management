@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState, type ComponentProps, type FC } from "react"
-import { MapContainer, TileLayer, Marker } from "react-leaflet"
+import { MapContainer, Marker } from "react-leaflet"
 import { LatLng, icon } from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { ChangeMapCenter } from "lib/map"
+import { MapTileLayer } from "components/modules/map-tile-layer"
 
 export const MarkingMap: FC<
   ComponentProps<"div"> & {
@@ -36,10 +37,7 @@ export const MarkingMap: FC<
             height: "100%",
           }}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          <MapTileLayer />
           <Marker
             position={position}
             icon={icon({

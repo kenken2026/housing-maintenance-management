@@ -18,3 +18,13 @@ export const useLoadinfState = create<{
   setLoadingMessage: (message?: string) =>
     set({ loagingMessage: message, isLoading: !!message }),
 }))
+
+type MapType = "OpenStreetMap" | "GSI"
+
+export const useMapTypeState = create<{
+  mapType?: MapType
+  setMapType: (type?: MapType) => void
+}>((set) => ({
+  mapType: "OpenStreetMap",
+  setMapType: (mapType?: MapType) => set({ mapType }),
+}))

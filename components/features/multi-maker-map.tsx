@@ -7,10 +7,11 @@ import {
   type ComponentProps,
   type FC,
 } from "react"
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
+import { MapContainer, Marker, Popup, useMap } from "react-leaflet"
 import { LatLng, icon, type Marker as LeafletMarker } from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { ChangeMapCenter, FitBoundsToMarkers, getCenterLatLng } from "lib/map"
+import { MapTileLayer } from "components/modules/map-tile-layer"
 
 const HoverableMarker: FC<{
   marker: Marker
@@ -100,10 +101,7 @@ const MultiMarkerMap: FC<
             height: "100%",
           }}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          <MapTileLayer />
           {markers.map((marker) => (
             <HoverableMarker
               key={marker.id}

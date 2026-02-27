@@ -4,11 +4,12 @@ import { FC, useState } from "react"
 import Link from "next/link"
 import { Modal } from "components/elements/modal"
 import { Button } from "components/elements/form"
-import { useTeamState } from "lib/store"
+import { useMapTypeState, useTeamState } from "lib/store"
 
 export const Header: FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const { team, setTeam } = useTeamState()
+  const { mapType, setMapType } = useMapTypeState()
   return (
     <header
       style={{
@@ -62,6 +63,27 @@ export const Header: FC = () => {
         <section style={{ padding: "1rem" }}>
           <div style={{ display: "flex", flexFlow: "column", gap: ".5rem" }}>
             <h2>設定</h2>
+            <div style={{ display: "flex", flexFlow: "column", gap: ".25rem" }}>
+              <p style={{ fontSize: ".75rem", fontWeight: "bold" }}>
+                地図タイル
+              </p>
+              <div style={{ display: "flex", gap: ".5rem" }}>
+                {(["OpenStreetMap", "GSI"] as const).map((type) => (
+                  <Button
+                    key={type}
+                    type="button"
+                    style={
+                      mapType === type
+                        ? { background: "#555", color: "#e9e9e9" }
+                        : undefined
+                    }
+                    onClick={() => setMapType(type)}
+                  >
+                    {type === "GSI" ? "国土地理院" : type}
+                  </Button>
+                ))}
+              </div>
+            </div>
             {team && (
               <Button
                 onClick={() => {
