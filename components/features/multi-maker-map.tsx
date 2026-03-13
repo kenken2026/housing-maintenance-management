@@ -32,7 +32,7 @@ const HoverableMarker: FC<{
       ref={markerRef}
       position={new LatLng(marker.latitude, marker.longitude)}
       icon={icon({
-        iconUrl: "/images/marker-icon-2x.png",
+        iconUrl: `${process.env.NEXT_PUBLIC_BASE_PATH}/images/marker-icon-2x.png`,
         iconSize: [20, 30],
         iconAnchor: [10, 30],
         popupAnchor: [10, -30],

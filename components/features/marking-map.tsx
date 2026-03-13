@@ -41,7 +41,7 @@ export const MarkingMap: FC<
           <Marker
             position={position}
             icon={icon({
-              iconUrl: "/images/marker-icon-2x.png",
+              iconUrl: `${process.env.NEXT_PUBLIC_BASE_PATH}/images/marker-icon-2x.png`,
               iconSize: [25, 41],
               iconAnchor: [25, 41],
               popupAnchor: [0, -41],
