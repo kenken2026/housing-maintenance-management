@@ -24,36 +24,33 @@ export const fetchPositionByAddress = async ({
 }: {
   address: string
 }): Promise<{ longitude: number; latitude: number } | undefined> => {
-  const response = await ky.post("https://geonlp.ex.nii.ac.jp/api/geonlp/v2", {
-    json: {
-      id: 1,
-      jsonrpc: "2.0",
-      method: "geonlp.addressGeocoding",
-      params: { address },
-    },
-  })
+  const response = await ky.get(
+    `https://nominatim.openstreetmap.org/search?q=${address}&format=json`,
+    {}
+  )
   if (response.ok) {
-    const { result } = await response.json<{
-      id: 1
-      jsonrpc: "2.0"
-      result: {
-        candidates: {
-          fullname: string[]
-          id: number
-          level: number
-          name: string
-          note: string
-          priority: number
-          x: number
-          y: number
-        }[]
-        matched: string
-      }
-    }>()
+    const results = await response.json<
+      {
+        place_id: number
+        licence: string
+        osm_type: string
+        osm_id: number
+        lat: number
+        lon: number
+        class: string
+        type: string
+        place_rank: number
+        importance: number
+        addresstype: string
+        name: string
+        display_name: string
+        boundingbox: string[]
+      }[]
+    >()
 
-    if (result.candidates.length > 0) {
-      const candidate = result.candidates[0]
-      return { latitude: candidate.y, longitude: candidate.x }
+    if (results.length > 0) {
+      const result = results[0]
+      return { latitude: result.lat, longitude: result.lon }
     }
   }
 }
