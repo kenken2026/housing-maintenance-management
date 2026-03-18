@@ -287,6 +287,9 @@ const Page: FC = () => {
                 placeholder="住所で調べる"
                 value={address}
                 onChange={({ target: { value } }) => setAddress(value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.preventDefault()
+                }}
               />
               <Button
                 type="button"
