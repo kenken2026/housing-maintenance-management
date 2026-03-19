@@ -6,11 +6,11 @@ const LABEL_W = 28
 const FONT_SIZE = 10
 const GROUND_H = 8
 
-// Returns column indices that should be stairs (0-indexed, evenly distributed)
+// Returns column indices that should be stairs (0-indexed, left-aligned)
 const stairColumns = (totalColumns: number, stepCount: number): Set<number> => {
   const indices = new Set<number>()
   for (let i = 0; i < stepCount; i++) {
-    indices.add(Math.floor(((i + 1) * totalColumns) / (stepCount + 1)))
+    indices.add(i)
   }
   return indices
 }
