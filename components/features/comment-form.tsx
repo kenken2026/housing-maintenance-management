@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, SubmitEventHandler, useState } from "react"
 import { Button, Form, Input, Label } from "components/elements/form"
 import { commentModel } from "lib/models/comment"
 import { ImageFileForm } from "components/modules/image-file-form"
@@ -20,7 +20,7 @@ export const CommentForm: FC<{
     ...initialComment,
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit: SubmitEventHandler = async (e) => {
     e.preventDefault()
     if (comment?.id) {
       setLoadingMessage("コメントを更新中...")

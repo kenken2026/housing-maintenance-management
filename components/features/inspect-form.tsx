@@ -44,9 +44,9 @@ export const InspectForm: FC<{
             setInspect({ ...inspect, description: e.target.value })
           }
         />
-        <UnitList house={house} inspect={inspect} onChange={handleChange} />
         <Button>保存</Button>
       </Form>
+      <UnitList house={house} inspect={inspect} onChange={handleChange} />
     </div>
   )
 }

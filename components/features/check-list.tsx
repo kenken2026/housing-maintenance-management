@@ -15,7 +15,9 @@ export const CheckList: FC<{
   return (
     <>
       <h4>{unit.name}</h4>
-      <Button onClick={() => setIsOpenCommentModal(true)}>コメント追加</Button>
+      <Button onClick={() => setIsOpenCommentModal(true)} type="button">
+        コメント追加
+      </Button>
       <div>
         <table style={{ fontSize: ".75rem", width: "100%" }}>
           <tbody>
