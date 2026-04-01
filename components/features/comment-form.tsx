@@ -11,7 +11,7 @@ export const CommentForm: FC<{
   inspect?: Inspect
   uname?: string
   uid?: string
-  onSave: Handler<void, void>
+  onSave: Handler<HouseComment, void>
 }> = ({ house, comment: initialComment, inspect, uid, uname, onSave }) => {
   const { setLoadingMessage } = useLoadinfState()
   const [comment, setComment] = useState<HouseComment>({
@@ -25,17 +25,19 @@ export const CommentForm: FC<{
     if (comment?.id) {
       setLoadingMessage("コメントを更新中...")
       await commentModel().update({ ...comment })
+      await onSave(comment)
     } else {
       setLoadingMessage("コメントを作成中...")
-      await commentModel().create({
+      const id = await commentModel().create({
         ...comment,
         houseId: house.id,
         inspectId: inspect?.id,
         uname,
         uid,
       })
+      const newComment = await commentModel().show(id)
+      await onSave(newComment)
     }
-    await onSave()
     setLoadingMessage(undefined)
   }
   return (
@@ -64,6 +66,8 @@ export const CommentForm: FC<{
             setComment({ ...comment, longitude: Number(value) })
           }
         />
+        <Label>ユニット</Label>
+        <Input value={uname} readOnly={true} />
         <p>本文</p>
         <Input
           value={comment?.body ?? ""}

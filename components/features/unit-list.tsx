@@ -2,12 +2,14 @@ import { Modal } from "components/elements/modal"
 import { OuteriorUnits, ResidenceUnits } from "lib/constants"
 import { ComponentProps, FC, useState } from "react"
 import { CheckList } from "./check-list"
+import { CommentForm } from "./comment-form"
 
 export const UnitList: FC<{
   house: House
   inspect?: Inspect
   onChange?(checkList: UnitCheck[]): void
-}> = ({ house, inspect, onChange }) => {
+  onComment?(comment: HouseComment): void
+}> = ({ house, inspect, onChange, onComment }) => {
   return (
     <>
       <UnitGroupWrapper>
@@ -35,6 +37,7 @@ export const UnitList: FC<{
                       ])
                     })
                   }
+                  onComment={onComment}
                 />
               ))}
             </>
@@ -110,6 +113,7 @@ export const UnitList: FC<{
                                 ])
                               })
                             }
+                            onComment={onComment}
                           />
                         ))}
                       {Array(fi.stepCount)
@@ -135,6 +139,7 @@ export const UnitList: FC<{
                                 ])
                               })
                             }
+                            onComment={onComment}
                           />
                         ))}
                     </UnitGroup>
@@ -174,6 +179,7 @@ export const UnitList: FC<{
                               ])
                             })
                           }
+                          onComment={onComment}
                         />
                       ))}
                     {Array(house.stepCount)
@@ -197,6 +203,7 @@ export const UnitList: FC<{
                               ])
                             })
                           }
+                          onComment={onComment}
                         />
                       ))}
                   </UnitGroup>
@@ -244,8 +251,9 @@ const UnitBox: FC<
     unitCheck?: UnitCheck
     inspect?: Inspect
     onChange?(unitCheck: UnitCheck): void
+    onComment?(comment: HouseComment): void
   }
-> = ({ house, unit, unitCheck, inspect, onChange, ...props }) => {
+> = ({ house, unit, unitCheck, inspect, onChange, onComment, ...props }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isOpenCheckListModal, setIsOpenCheckListModal] =
     useState<boolean>(false)
@@ -262,7 +270,7 @@ const UnitBox: FC<
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => onChange && setIsOpenCheckListModal(true)}
+        onClick={() => setIsOpenCheckListModal(true)}
         {...props}
       >
         <h4>
@@ -270,7 +278,7 @@ const UnitBox: FC<
           {unit.name}
         </h4>
       </div>
-      {onChange && (
+      {onChange ? (
         <Modal
           isOpen={isOpenCheckListModal}
           onClose={() => setIsOpenCheckListModal(false)}
@@ -281,6 +289,21 @@ const UnitBox: FC<
             unitCheck={unitCheck}
             inspect={inspect}
             onChange={onChange}
+          />
+        </Modal>
+      ) : (
+        <Modal
+          isOpen={isOpenCheckListModal}
+          onClose={() => setIsOpenCheckListModal(false)}
+        >
+          <CommentForm
+            house={house}
+            uname={unit.name}
+            uid={unit.uid}
+            onSave={(comment) => {
+              setIsOpenCheckListModal(false)
+              onComment?.({ ...comment })
+            }}
           />
         </Modal>
       )}
