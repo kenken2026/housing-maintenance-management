@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Modal } from "components/elements/modal"
 import { Button } from "components/elements/form"
 import { useMapTypeState, useTeamState } from "lib/store"
+import { DBBackup } from "components/features/db-backup"
 
 export const Header: FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -84,6 +85,7 @@ export const Header: FC = () => {
                 ))}
               </div>
             </div>
+            <DBBackup />
             {team && (
               <Button
                 onClick={() => {

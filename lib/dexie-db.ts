@@ -101,6 +101,26 @@ export class DexieAdapter {
       return { lastInsertId: 0 }
     }
 
+    // DELETE FROM table (全削除)
+    const deleteAllMatch = normalized.match(
+      /DELETE\s+FROM\s+(\w+)\s*$/i
+    )
+    if (deleteAllMatch) {
+      const table = this.getTable(deleteAllMatch[1])
+      await table.clear()
+      return { lastInsertId: 0 }
+    }
+
+    // DELETE FROM table WHERE id > 0 (全削除の代替パターン)
+    const deleteAllGtMatch = normalized.match(
+      /DELETE\s+FROM\s+(\w+)\s+WHERE\s+id\s*>\s*0/i
+    )
+    if (deleteAllGtMatch) {
+      const table = this.getTable(deleteAllGtMatch[1])
+      await table.clear()
+      return { lastInsertId: 0 }
+    }
+
     // DELETE FROM table WHERE id = ?
     const deleteMatch = normalized.match(
       /DELETE\s+FROM\s+(\w+)\s+WHERE\s+id\s*=\s*\?/i
@@ -120,10 +140,12 @@ export class DexieAdapter {
       const columns = insertMatch[2].split(",").map((c) => c.trim())
       const table = this.getTable(tableName)
       const now = new Date().toISOString()
-      const obj: Record<string, unknown> = { createdAt: now, updatedAt: now }
+      const obj: Record<string, unknown> = {}
       columns.forEach((col, i) => {
         obj[col] = serializeValue(params[i])
       })
+      if (!("createdAt" in obj)) obj.createdAt = now
+      if (!("updatedAt" in obj)) obj.updatedAt = now
       const id = await table.add(obj)
       return { lastInsertId: id as number }
     }
