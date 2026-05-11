@@ -23,6 +23,10 @@ export const EMPTY_MAP_STYLE: StyleSpecification = {
   layers: [],
 }
 
+export const DEFAULT_CENTER: Position = { latitude: 35.6809591, longitude: 139.7673068 }
+
+export const MARKER_ICON_SRC = `${process.env.NEXT_PUBLIC_BASE_PATH}/images/marker-icon-2x.png`
+
 const calcCenter = (values: number[]) =>
   (Math.max(...values) + Math.min(...values)) / 2
 

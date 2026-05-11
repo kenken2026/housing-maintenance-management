@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { Button, Form, Input, Label } from "components/elements/form"
 import { MarkingMap } from "components/features/marking-map"
 import { houseModel } from "lib/models/house"
+import { DEFAULT_CENTER } from "lib/map"
 import { fetchAltitude, fetchPositionByAddress } from "lib/geo"
 import { HouseSchematic } from "components/features/house-schematic"
 import { CSVFileForm } from "components/modules/csv-file-form"
@@ -64,8 +65,8 @@ const Page: FC = () => {
   const { setLoadingMessage } = useLoadinfState()
   const [newHouse, setNewHouse] = useState<NewHouseInput>({
     name: "",
-    latitude: 35.6809591,
-    longitude: 139.7673068,
+    latitude: DEFAULT_CENTER.latitude,
+    longitude: DEFAULT_CENTER.longitude,
     floorCount: 3,
     roomCount: 3,
     stepCount: 1,

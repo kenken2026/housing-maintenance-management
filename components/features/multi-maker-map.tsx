@@ -1,10 +1,23 @@
 "use client"
 
-import { useEffect, useRef, useState, type ComponentProps, type FC } from "react"
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type FC,
+} from "react"
 import Map, { Marker, Popup, type MapRef } from "react-map-gl/maplibre"
 import "maplibre-gl/dist/maplibre-gl.css"
-import { EMPTY_MAP_STYLE, getCenterPosition } from "lib/map"
+import {
+  DEFAULT_CENTER,
+  EMPTY_MAP_STYLE,
+  MARKER_ICON_SRC,
+  getCenterPosition,
+} from "lib/map"
 import { MapTileLayer } from "components/modules/map-tile-layer"
+import { ZoomDisplay } from "components/modules/zoom-display"
 
 const MultiMarkerMap: FC<
   ComponentProps<"div"> & {
@@ -15,13 +28,14 @@ const MultiMarkerMap: FC<
 > = ({ markers, hoveredMarkerId, style, onMarkerClick, ...props }) => {
   const mapRef = useRef<MapRef>(null)
   const [zoom, setZoom] = useState(13)
+  const [initialCenter] = useState(() =>
+    markers.length > 0 ? getCenterPosition(markers) : DEFAULT_CENTER
+  )
 
-  const initialCenter =
-    markers.length > 0
-      ? getCenterPosition(markers)
-      : { latitude: 35.6809591, longitude: 139.7673068 }
-
-  const hoveredMarker = markers.find((m) => m.id === hoveredMarkerId)
+  const hoveredMarker = useMemo(
+    () => markers.find((m) => m.id === hoveredMarkerId),
+    [markers, hoveredMarkerId]
+  )
 
   useEffect(() => {
     if (markers.length === 0) {
@@ -44,19 +58,16 @@ const MultiMarkerMap: FC<
   }, [markers])
 
   useEffect(() => {
-    if (hoveredMarkerId === undefined) return
-    const marker = markers.find((m) => m.id === hoveredMarkerId)
-    if (marker) {
-      mapRef.current?.flyTo({
-        center: [marker.longitude, marker.latitude],
-        zoom: 16,
-        duration: 400,
-      })
-    }
-  }, [hoveredMarkerId, markers])
+    if (!hoveredMarker) return
+    mapRef.current?.flyTo({
+      center: [hoveredMarker.longitude, hoveredMarker.latitude],
+      zoom: 16,
+      duration: 400,
+    })
+  }, [hoveredMarker])
 
   return (
-    <div style={{ ...style }} {...props}>
+    <div style={style} {...props}>
       <Map
         ref={mapRef}
         initialViewState={{
@@ -78,7 +89,7 @@ const MultiMarkerMap: FC<
             onClick={() => onMarkerClick({ id: marker.id })}
           >
             <img
-              src={`${process.env.NEXT_PUBLIC_BASE_PATH}/images/marker-icon-2x.png`}
+              src={MARKER_ICON_SRC}
               style={{ width: 20, height: 30, cursor: "pointer" }}
               alt={marker.name}
             />
@@ -106,23 +117,7 @@ const MultiMarkerMap: FC<
             </div>
           </Popup>
         )}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 24,
-            right: 8,
-            zIndex: 1,
-            background: "rgba(255,255,255,0.85)",
-            borderRadius: 4,
-            padding: "2px 6px",
-            fontSize: 12,
-            fontWeight: "bold",
-            pointerEvents: "none",
-            lineHeight: "1.5",
-          }}
-        >
-          zoom: {Math.round(zoom * 10) / 10}
-        </div>
+        <ZoomDisplay zoom={zoom} />
       </Map>
     </div>
   )
