@@ -2,10 +2,20 @@
 
 import { TILE_CONFIGS } from "lib/map"
 import { useMapTypeState } from "lib/store"
-import { TileLayer } from "react-leaflet"
+import { Layer, Source } from "react-map-gl/maplibre"
 
 export const MapTileLayer = () => {
   const { mapType } = useMapTypeState()
   const config = TILE_CONFIGS[mapType ?? "OpenStreetMap"]
-  return <TileLayer attribution={config.attribution} url={config.url} />
+  return (
+    <Source
+      id="base-tiles"
+      type="raster"
+      tiles={[...config.tiles]}
+      tileSize={256}
+      attribution={config.attribution}
+    >
+      <Layer id="base-layer" type="raster" />
+    </Source>
+  )
 }
