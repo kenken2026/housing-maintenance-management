@@ -10,7 +10,7 @@ import {
 import { MapContainer, Marker, Popup, useMap } from "react-leaflet"
 import { LatLng, icon, type Marker as LeafletMarker } from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { ChangeMapCenter, FitBoundsToMarkers, getCenterLatLng } from "lib/map"
+import { ChangeMapCenter, FitBoundsToMarkers, getCenterLatLng, ZoomDisplay } from "lib/map"
 import { MapTileLayer } from "components/modules/map-tile-layer"
 
 const HoverableMarker: FC<{
@@ -97,7 +97,6 @@ const MultiMarkerMap: FC<
         <MapContainer
           center={position}
           zoom={13}
-          maxZoom={19}
           style={{
             height: "100%",
           }}
@@ -114,6 +113,7 @@ const MultiMarkerMap: FC<
           <ChangeMapCenter position={position} />
           {markers.length > 0 && <FitBoundsToMarkers markers={markers} />}
           <ZoomController hoveredMarkerId={hoveredMarkerId} markers={markers} />
+          <ZoomDisplay />
         </MapContainer>
       )}
     </div>

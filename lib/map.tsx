@@ -1,6 +1,6 @@
 import { LatLng, LatLngBounds } from "leaflet"
-import { useEffect } from "react"
-import { useMap } from "react-leaflet"
+import { useEffect, useState } from "react"
+import { useMap, useMapEvents } from "react-leaflet"
 
 export const TILE_CONFIGS = {
   OpenStreetMap: {
@@ -37,6 +37,33 @@ export const getCenterLatLng = (positions: Position[]): LatLng =>
     calcCenter(positions.map((p) => p.latitude)),
     calcCenter(positions.map((p) => p.longitude))
   )
+
+export const ZoomDisplay = () => {
+  const map = useMap()
+  const [zoom, setZoom] = useState(map.getZoom())
+  useMapEvents({
+    zoomend: () => setZoom(map.getZoom()),
+  })
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 24,
+        right: 8,
+        zIndex: 1000,
+        background: "rgba(255,255,255,0.85)",
+        borderRadius: 4,
+        padding: "2px 6px",
+        fontSize: 12,
+        fontWeight: "bold",
+        pointerEvents: "none",
+        lineHeight: "1.5",
+      }}
+    >
+      zoom: {zoom}
+    </div>
+  )
+}
 
 export const FitBoundsToMarkers = ({
   markers,

@@ -4,7 +4,7 @@ import { useEffect, useState, type ComponentProps, type FC } from "react"
 import { MapContainer, Marker } from "react-leaflet"
 import { LatLng, icon } from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { ChangeMapCenter } from "lib/map"
+import { ChangeMapCenter, ZoomDisplay } from "lib/map"
 import { MapTileLayer } from "components/modules/map-tile-layer"
 
 export const MarkingMap: FC<
@@ -33,7 +33,6 @@ export const MarkingMap: FC<
         <MapContainer
           center={position}
           zoom={13}
-          maxZoom={19}
           style={{
             height: "100%",
           }}
@@ -60,6 +59,7 @@ export const MarkingMap: FC<
             }}
           ></Marker>
           <ChangeMapCenter position={position} />
+          <ZoomDisplay />
         </MapContainer>
       )}
     </div>
