@@ -97,6 +97,7 @@ const MultiMarkerMap: FC<
         <MapContainer
           center={position}
           zoom={13}
+          maxZoom={19}
           style={{
             height: "100%",
           }}
