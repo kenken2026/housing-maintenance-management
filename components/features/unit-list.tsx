@@ -7,9 +7,10 @@ import { CommentForm } from "./comment-form"
 export const UnitList: FC<{
   house: House
   inspect?: Inspect
+  comments?: HouseComment[]
   onChange?(checkList: UnitCheck[]): void
   onComment?(comment: HouseComment): void
-}> = ({ house, inspect, onChange, onComment }) => {
+}> = ({ house, inspect, comments, onChange, onComment }) => {
   return (
     <>
       <UnitGroupWrapper>
@@ -27,6 +28,7 @@ export const UnitList: FC<{
                   unitCheck={(inspect?.payload as UnitCheck[])?.find(
                     (uc) => uc.uid == unit.uid
                   )}
+                  comments={comments}
                   onChange={
                     onChange &&
                     ((uc) => {
@@ -59,6 +61,7 @@ export const UnitList: FC<{
                   unitCheck={(inspect?.payload as UnitCheck[])?.find(
                     (uc) => uc.uid == unit.uid
                   )}
+                  comments={comments}
                   onChange={
                     onChange &&
                     ((uc) => {
@@ -100,6 +103,7 @@ export const UnitList: FC<{
                             unitCheck={(inspect?.payload as UnitCheck[])?.find(
                               (uc) => uc.uid == `f${i}r${j}`
                             )}
+                            comments={comments}
                             onChange={
                               onChange &&
                               ((uc) => {
@@ -126,6 +130,7 @@ export const UnitList: FC<{
                             unitCheck={(inspect?.payload as UnitCheck[])?.find(
                               (uc) => uc.uid == `f${i}s${j}`
                             )}
+                            comments={comments}
                             onChange={
                               onChange &&
                               ((uc) => {
@@ -168,6 +173,7 @@ export const UnitList: FC<{
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}r${j}`
                           )}
+                          comments={comments}
                           onChange={
                             onChange &&
                             ((uc) => {
@@ -192,6 +198,7 @@ export const UnitList: FC<{
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}s${j}`
                           )}
+                          comments={comments}
                           onChange={
                             onChange &&
                             ((uc) => {
@@ -250,13 +257,15 @@ const UnitBox: FC<
     unit: Unit
     unitCheck?: UnitCheck
     inspect?: Inspect
+    comments?: HouseComment[]
     onChange?(unitCheck: UnitCheck): void
     onComment?(comment: HouseComment): void
   }
-> = ({ house, unit, unitCheck, inspect, onChange, onComment, ...props }) => {
+> = ({ house, unit, unitCheck, inspect, comments, onChange, onComment, ...props }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isOpenCheckListModal, setIsOpenCheckListModal] =
     useState<boolean>(false)
+  const unitComments = comments?.filter((c) => c.uid === unit.uid) ?? []
   return (
     <>
       <div
@@ -296,6 +305,38 @@ const UnitBox: FC<
           isOpen={isOpenCheckListModal}
           onClose={() => setIsOpenCheckListModal(false)}
         >
+          {unitComments.length > 0 && (
+            <div style={{ marginBottom: "1rem" }}>
+              <h4>コメント一覧</h4>
+              <div style={{ display: "flex", flexDirection: "column", gap: ".5rem" }}>
+                {unitComments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    style={{
+                      borderTop: "solid 1px #eee",
+                      display: "flex",
+                      gap: ".5rem",
+                      paddingTop: ".5rem",
+                    }}
+                  >
+                    {comment.image && (
+                      <img
+                        src={comment.image}
+                        alt=""
+                        style={{ height: "4rem", objectFit: "contain", width: "4rem" }}
+                      />
+                    )}
+                    <div>
+                      <div style={{ fontSize: ".75rem", color: "#888" }}>
+                        {new Date(comment.createdAt).toLocaleDateString()}
+                      </div>
+                      <div>{comment.body}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <CommentForm
             house={house}
             uname={unit.name}

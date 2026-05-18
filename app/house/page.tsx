@@ -309,6 +309,7 @@ const HousePage: FC = () => {
           <h3>ユニット一覧</h3>
           <UnitList
             house={house}
+            comments={comments}
             onComment={(comment) => setComments([comment, ...comments])}
           />
         </Card>
