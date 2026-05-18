@@ -1,3 +1,8 @@
+declare module '*.css' {
+  const content: Record<string, string>
+  export default content
+}
+
 type Team = {
   id: number
   name: string
