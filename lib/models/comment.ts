@@ -26,8 +26,8 @@ export const commentModel = () => {
     }: {
       houseId: number
       inspectId?: number
-      latitude: number
-      longitude: number
+      latitude?: number
+      longitude?: number
       altitude?: number
       body?: string
       image?: string
@@ -61,8 +61,8 @@ export const commentModel = () => {
       image,
     }: {
       id: number
-      latitude: number
-      longitude: number
+      latitude?: number
+      longitude?: number
       altitude?: number
       body?: string
       image?: string

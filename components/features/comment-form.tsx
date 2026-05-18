@@ -15,22 +15,20 @@ export const CommentForm: FC<{
   onSave: Handler<HouseComment, void>
 }> = ({ house, comment: initialComment, inspect, uid, uname, onSave }) => {
   const { setLoadingMessage } = useLoadinfState()
-  const [comment, setComment] = useState<HouseComment>({
-    latitude: house.latitude,
-    longitude: house.longitude,
-    ...initialComment,
-  })
+  const [comment, setComment] = useState<Partial<HouseComment>>(
+    initialComment ?? {}
+  )
   const [isSettingPosition, setIsSettingPosition] = useState<boolean>(false)
 
-  const hasHousePosition = !!(house.latitude && house.longitude)
-  const showMap = hasHousePosition || isSettingPosition
+  const hasCommentPosition = !!(comment?.latitude && comment?.longitude)
+  const showMap = hasCommentPosition || isSettingPosition
 
   const handleSubmit: SubmitEventHandler = async (e) => {
     e.preventDefault()
     if (comment?.id) {
       setLoadingMessage("コメントを更新中...")
-      await commentModel().update({ ...comment })
-      await onSave(comment)
+      await commentModel().update({ ...comment as HouseComment })
+      await onSave(comment as HouseComment)
     } else {
       setLoadingMessage("コメントを作成中...")
       const id = await commentModel().create({
@@ -50,7 +48,13 @@ export const CommentForm: FC<{
       <Form onSubmit={handleSubmit}>
         {showMap ? (
           <MarkingMap
-            initialPosition={hasHousePosition ? { ...house } : DEFAULT_CENTER}
+            initialPosition={
+              hasCommentPosition
+                ? { latitude: comment.latitude!, longitude: comment.longitude! }
+                : house.latitude && house.longitude
+                ? { latitude: house.latitude, longitude: house.longitude }
+                : DEFAULT_CENTER
+            }
             onChangePosition={(position) =>
               setComment({
                 ...comment,
@@ -65,16 +69,16 @@ export const CommentForm: FC<{
         )}
         <Label>緯度</Label>
         <Input
-          value={comment?.latitude ?? house.latitude}
+          value={comment?.latitude ?? ""}
           onChange={({ target: { value } }) =>
-            setComment({ ...comment, latitude: Number(value) })
+            setComment({ ...comment, latitude: value ? Number(value) : undefined })
           }
         />
         <Label>経度</Label>
         <Input
-          value={comment?.longitude ?? house.longitude}
+          value={comment?.longitude ?? ""}
           onChange={({ target: { value } }) =>
-            setComment({ ...comment, longitude: Number(value) })
+            setComment({ ...comment, longitude: value ? Number(value) : undefined })
           }
         />
         <Label>ユニット</Label>

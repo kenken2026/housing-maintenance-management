@@ -18,8 +18,8 @@ import { OuteriorUnits, ResidenceUnits } from "lib/constants"
 type NewHouseInput = {
   name: string
   altitude?: number
-  latitude: number
-  longitude: number
+  latitude?: number
+  longitude?: number
   floorCount: number
   roomCount: number
   stepCount: number
@@ -68,8 +68,6 @@ const Page: FC = () => {
   const { setLoadingMessage } = useLoadinfState()
   const [newHouse, setNewHouse] = useState<NewHouseInput>({
     name: "",
-    latitude: DEFAULT_CENTER.latitude,
-    longitude: DEFAULT_CENTER.longitude,
     floorCount: 3,
     roomCount: 3,
     stepCount: 1,
@@ -81,7 +79,7 @@ const Page: FC = () => {
   useEffect(() => {
     const fetch = async () => {
       if (newHouse.latitude && newHouse.longitude) {
-        const altitude = await fetchAltitude({ ...newHouse })
+        const altitude = await fetchAltitude({ latitude: newHouse.latitude!, longitude: newHouse.longitude! })
         if (altitude)
           setNewHouse((prev) => ({
             ...prev,
@@ -150,14 +148,16 @@ const Page: FC = () => {
 
     const newHouseId = await houseModel().create({
       ...newHouse,
+      latitude: newHouse.latitude!,
+      longitude: newHouse.longitude!,
       exteriorInformation: newHouse.exteriorInformation,
       residenceInformation: newHouse.residenceInformation,
-      uid: `${Math.floor(newHouse.latitude)}${
-        newHouse.latitude.toPrecision(8).split(".")[1]
-      }${Math.floor(newHouse.longitude)}${
-        newHouse.longitude.toPrecision(9).split(".")[1]
-      }${("000" + Math.floor(newHouse.altitude)).slice(-4)}${(
-        newHouse.altitude.toPrecision(6) + "00"
+      uid: `${Math.floor(newHouse.latitude!)}${
+        newHouse.latitude!.toPrecision(8).split(".")[1]
+      }${Math.floor(newHouse.longitude!)}${
+        newHouse.longitude!.toPrecision(9).split(".")[1]
+      }${("000" + Math.floor(newHouse.altitude!)).slice(-4)}${(
+        newHouse.altitude!.toPrecision(6) + "00"
       )
         .split(".")[1]
         .slice(0, 2)}`,
@@ -276,10 +276,11 @@ const Page: FC = () => {
               floorInformation={newHouse.floorInformation}
             />
             <MarkingMap
-              initialPosition={{
-                latitude: newHouse.latitude,
-                longitude: newHouse.longitude,
-              }}
+              initialPosition={
+                newHouse.latitude && newHouse.longitude
+                  ? { latitude: newHouse.latitude, longitude: newHouse.longitude }
+                  : DEFAULT_CENTER
+              }
               onChangePosition={(position) =>
                 setNewHouse({
                   ...newHouse,
@@ -312,9 +313,9 @@ const Page: FC = () => {
             <Input
               type="number"
               placeholder="緯度"
-              value={newHouse.latitude}
+              value={newHouse.latitude ?? ""}
               onChange={({ target: { value } }) =>
-                setNewHouse({ ...newHouse, latitude: Number(value) })
+                setNewHouse({ ...newHouse, latitude: value ? Number(value) : undefined })
               }
               required
             />
@@ -322,9 +323,9 @@ const Page: FC = () => {
             <Input
               type="number"
               placeholder="経度"
-              value={newHouse.longitude}
+              value={newHouse.longitude ?? ""}
               onChange={({ target: { value } }) =>
-                setNewHouse({ ...newHouse, longitude: Number(value) })
+                setNewHouse({ ...newHouse, longitude: value ? Number(value) : undefined })
               }
               required
             />

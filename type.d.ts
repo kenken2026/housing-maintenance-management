@@ -44,8 +44,8 @@ type House = {
 type HouseComment = {
   id: number
   houseId: number
-  latitude: number
-  longitude: number
+  latitude?: number
+  longitude?: number
   altitude?: number
   body?: string
   image?: string

@@ -62,7 +62,7 @@ const HousePage: FC = () => {
   const commentMarkers = useMemo(
     () =>
       (comments ?? [])
-        .filter((c) => c.latitude && c.longitude)
+        .filter((c): c is HouseComment & { latitude: number; longitude: number } => !!(c.latitude && c.longitude))
         .map((c) => ({
           ...c,
           name: `${new Date(c.createdAt).toLocaleDateString()}\n(${c.body})`,
