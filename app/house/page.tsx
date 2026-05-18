@@ -311,6 +311,13 @@ const HousePage: FC = () => {
             house={house}
             comments={comments}
             onComment={(comment) => setComments([comment, ...comments])}
+            onUnitPositionChange={async (uid, position) => {
+              const unitPositions = { ...(house.unitPositions ?? {}) }
+              if (position) unitPositions[uid] = position
+              else delete unitPositions[uid]
+              await houseModel().updateUnitPositions(house.id, unitPositions)
+              setHouse({ ...house, unitPositions })
+            }}
           />
         </Card>
       )}

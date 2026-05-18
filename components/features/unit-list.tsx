@@ -3,6 +3,8 @@ import { OuteriorUnits, ResidenceUnits } from "lib/constants"
 import { ComponentProps, FC, useState } from "react"
 import { CheckList } from "./check-list"
 import { CommentForm } from "./comment-form"
+import { MarkingMap } from "./marking-map"
+import { Button } from "components/elements/form"
 
 export const UnitList: FC<{
   house: House
@@ -10,7 +12,8 @@ export const UnitList: FC<{
   comments?: HouseComment[]
   onChange?(checkList: UnitCheck[]): void
   onComment?(comment: HouseComment): void
-}> = ({ house, inspect, comments, onChange, onComment }) => {
+  onUnitPositionChange?(uid: string, position: Position | undefined): void
+}> = ({ house, inspect, comments, onChange, onComment, onUnitPositionChange }) => {
   return (
     <>
       <UnitGroupWrapper>
@@ -36,6 +39,7 @@ export const UnitList: FC<{
                 })
               }
               onComment={onComment}
+              onUnitPositionChange={onUnitPositionChange}
             />
           ))}
         </UnitGroup>
@@ -62,6 +66,7 @@ export const UnitList: FC<{
                   ])
                 })
               }
+              onUnitPositionChange={onUnitPositionChange}
             />
           ))}
         </UnitGroup>
@@ -106,6 +111,7 @@ export const UnitList: FC<{
                               })
                             }
                             onComment={onComment}
+                            onUnitPositionChange={onUnitPositionChange}
                           />
                         ))}
                       {Array(fi.stepCount)
@@ -133,6 +139,7 @@ export const UnitList: FC<{
                               })
                             }
                             onComment={onComment}
+                            onUnitPositionChange={onUnitPositionChange}
                           />
                         ))}
                     </UnitGroup>
@@ -174,6 +181,7 @@ export const UnitList: FC<{
                             })
                           }
                           onComment={onComment}
+                          onUnitPositionChange={onUnitPositionChange}
                         />
                       ))}
                     {Array(house.stepCount)
@@ -199,6 +207,7 @@ export const UnitList: FC<{
                             })
                           }
                           onComment={onComment}
+                          onUnitPositionChange={onUnitPositionChange}
                         />
                       ))}
                   </UnitGroup>
@@ -248,12 +257,75 @@ const UnitBox: FC<
     comments?: HouseComment[]
     onChange?(unitCheck: UnitCheck): void
     onComment?(comment: HouseComment): void
+    onUnitPositionChange?(uid: string, position: Position | undefined): void
   }
-> = ({ house, unit, unitCheck, inspect, comments, onChange, onComment, ...props }) => {
+> = ({ house, unit, unitCheck, inspect, comments, onChange, onComment, onUnitPositionChange, ...props }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
-  const [isOpenCheckListModal, setIsOpenCheckListModal] =
-    useState<boolean>(false)
+  const [isOpenCheckListModal, setIsOpenCheckListModal] = useState<boolean>(false)
+  const [isSettingPosition, setIsSettingPosition] = useState<boolean>(false)
+  const [pendingPosition, setPendingPosition] = useState<Position | undefined>(undefined)
+  const currentPosition = house.unitPositions?.[unit.uid]
   const unitComments = comments?.filter((c) => c.uid === unit.uid) ?? []
+
+  const handleOpenModal = () => {
+    setIsSettingPosition(false)
+    setPendingPosition(undefined)
+    setIsOpenCheckListModal(true)
+  }
+
+  const handleSavePosition = () => {
+    if (pendingPosition) {
+      onUnitPositionChange?.(unit.uid, pendingPosition)
+      setPendingPosition(undefined)
+      setIsSettingPosition(false)
+    }
+  }
+
+  const positionSection = onUnitPositionChange && (
+    <div style={{ marginBottom: "1rem" }}>
+      <h4>位置</h4>
+      {isSettingPosition || currentPosition ? (
+        <>
+          <MarkingMap
+            initialPosition={
+              currentPosition ??
+              (house.latitude && house.longitude
+                ? { latitude: house.latitude, longitude: house.longitude }
+                : undefined)
+            }
+            onChangePosition={(pos) => {
+              setPendingPosition(pos)
+              setIsSettingPosition(true)
+            }}
+          />
+          <div style={{ display: "flex", gap: ".5rem", marginTop: ".5rem" }}>
+            {pendingPosition && (
+              <Button type="button" onClick={handleSavePosition}>
+                位置を保存
+              </Button>
+            )}
+            {currentPosition && (
+              <Button
+                type="button"
+                onClick={() => {
+                  onUnitPositionChange(unit.uid, undefined)
+                  setIsSettingPosition(false)
+                  setPendingPosition(undefined)
+                }}
+              >
+                位置を削除
+              </Button>
+            )}
+          </div>
+        </>
+      ) : (
+        <Button type="button" onClick={() => setIsSettingPosition(true)}>
+          位置を設定
+        </Button>
+      )}
+    </div>
+  )
+
   return (
     <>
       <div
@@ -267,12 +339,13 @@ const UnitBox: FC<
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => setIsOpenCheckListModal(true)}
+        onClick={handleOpenModal}
         {...props}
       >
         <h4>
           {unitCheck && <>✓&nbsp;</>}
           {unit.name}
+          {currentPosition && <>&nbsp;📍</>}
         </h4>
       </div>
       {onChange ? (
@@ -280,6 +353,7 @@ const UnitBox: FC<
           isOpen={isOpenCheckListModal}
           onClose={() => setIsOpenCheckListModal(false)}
         >
+          {positionSection}
           <CheckList
             house={house}
             unit={unit}
@@ -293,6 +367,7 @@ const UnitBox: FC<
           isOpen={isOpenCheckListModal}
           onClose={() => setIsOpenCheckListModal(false)}
         >
+          {positionSection}
           {unitComments.length > 0 && (
             <div style={{ marginBottom: "1rem" }}>
               <h4>コメント一覧</h4>

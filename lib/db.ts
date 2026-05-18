@@ -83,10 +83,17 @@ const createTable = async (database: DBAdapter) => {
     floorInformation        JSON,
     exteriorInformation     JSON,
     checkListTemplate      JSON,
+    unitPositions           JSON,
 
     FOREIGN KEY (teamId) REFERENCES teams(id) ON DELETE CASCADE
     )`
   )
+
+  try {
+    await database.execute(`ALTER TABLE houses ADD COLUMN unitPositions JSON`)
+  } catch {
+    // column already exists
+  }
 
   await database.execute(
     `CREATE TABLE IF NOT EXISTS inspects(

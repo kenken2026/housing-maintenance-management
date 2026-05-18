@@ -39,6 +39,7 @@ type House = {
   exteriorInformation?: ExteriorInformation
   residenceInformation?: ResidenceInformation
   checkListTemplate?: CheckTemplate[]
+  unitPositions?: Record<string, Position>
 }
 
 type HouseComment = {
@@ -71,6 +72,9 @@ type Position = { latitude: number; longitude: number }
 type Unit = {
   uid: string
   name: string
+  latitude?: number
+  longitude?: number
+  altitude?: number
 }
 
 type CheckTemplate = {

@@ -96,8 +96,8 @@ export class DexieAdapter {
   ): Promise<{ lastInsertId: number }> {
     const normalized = sql.trim().replace(/\s+/g, " ")
 
-    // CREATE TABLE — no-op（スキーマは Dexie コンストラクタで定義）
-    if (/^\s*CREATE\s+TABLE/i.test(normalized)) {
+    // CREATE TABLE / ALTER TABLE — no-op（スキーマは Dexie コンストラクタで定義）
+    if (/^\s*(CREATE\s+TABLE|ALTER\s+TABLE)/i.test(normalized)) {
       return { lastInsertId: 0 }
     }
 

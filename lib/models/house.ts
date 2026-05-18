@@ -1,11 +1,12 @@
 import { dbInstance } from "lib/db"
 import { model } from "."
 
-type HouseRaw = Omit<House, "floorInformation" | "exteriorInformation" | "residenceInformation" | "checkListTemplate"> & {
+type HouseRaw = Omit<House, "floorInformation" | "exteriorInformation" | "residenceInformation" | "checkListTemplate" | "unitPositions"> & {
   floorInformation?: string
   exteriorInformation?: string
   residenceInformation?: string
   checkListTemplate?: string
+  unitPositions?: string
 }
 
 const parseHouse = (raw: HouseRaw): House => ({
@@ -21,6 +22,9 @@ const parseHouse = (raw: HouseRaw): House => ({
     : undefined,
   checkListTemplate: raw.checkListTemplate
     ? (JSON.parse(raw.checkListTemplate) as CheckTemplate[])
+    : undefined,
+  unitPositions: raw.unitPositions
+    ? (JSON.parse(raw.unitPositions) as Record<string, Position>)
     : undefined,
 })
 
@@ -74,6 +78,7 @@ export const houseModel = () => {
       exteriorInformation?: ExteriorInformation
       residenceInformation?: ResidenceInformation
       checkListTemplate?: CheckTemplate[]
+      unitPositions?: Record<string, Position>
     }): Promise<number> => {
       const result = await db.execute(
         `INSERT INTO houses (
@@ -97,6 +102,15 @@ export const houseModel = () => {
         ]
       )
       return result.lastInsertId
+    },
+    updateUnitPositions: async (
+      id: number,
+      unitPositions: Record<string, Position>
+    ): Promise<void> => {
+      await db.execute(
+        `UPDATE houses SET unitPositions = ?, updatedAt = datetime('now') WHERE id = ?`,
+        [JSON.stringify(unitPositions), id]
+      )
     },
   }
 }
