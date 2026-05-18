@@ -1,11 +1,11 @@
 export const OuteriorUnits: Unit[] = [
   {
     uid: "o1",
-    name: "外構",
+    name: "植栽・駐車場等",
   },
   {
     uid: "o2",
-    name: "設備等（外構）",
+    name: "設備",
   },
 ] as const
 
