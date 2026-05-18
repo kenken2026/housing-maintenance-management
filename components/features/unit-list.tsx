@@ -98,7 +98,7 @@ export const UnitList: FC<{
                             key={j}
                             unit={{
                               uid: `f${i}r${j}`,
-                              name: `部屋${j + 1}`,
+                              name: `U${j + 1}`,
                             }}
                             unitCheck={(inspect?.payload as UnitCheck[])?.find(
                               (uc) => uc.uid == `f${i}r${j}`
@@ -126,7 +126,7 @@ export const UnitList: FC<{
                           <UnitBox
                             key={j}
                             house={house}
-                            unit={{ uid: `f${i}s${j}`, name: `階段${j + 1}` }}
+                            unit={{ uid: `f${i}s${j}`, name: `S${j + 1}` }}
                             unitCheck={(inspect?.payload as UnitCheck[])?.find(
                               (uc) => uc.uid == `f${i}s${j}`
                             )}
@@ -194,7 +194,7 @@ export const UnitList: FC<{
                         <UnitBox
                           key={j}
                           house={house}
-                          unit={{ uid: `f${i}s${j}`, name: `階段${j + 1}` }}
+                          unit={{ uid: `f${i}s${j}`, name: `S${j + 1}` }}
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}s${j}`
                           )}
