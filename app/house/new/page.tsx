@@ -13,6 +13,7 @@ import { fetchAltitude, fetchPositionByAddress } from "lib/geo"
 import { HouseSchematic } from "components/features/house-schematic"
 import { CSVFileForm } from "components/modules/csv-file-form"
 import { hash } from "lib/text"
+import { OuteriorUnits, ResidenceUnits } from "lib/constants"
 
 type NewHouseInput = {
   name: string
@@ -23,6 +24,8 @@ type NewHouseInput = {
   roomCount: number
   stepCount: number
   floorInformation: FloorInformation
+  exteriorInformation?: ExteriorInformation
+  residenceInformation?: ResidenceInformation
   checkListTemplate?: CheckTemplate[]
 }
 
@@ -147,6 +150,8 @@ const Page: FC = () => {
 
     const newHouseId = await houseModel().create({
       ...newHouse,
+      exteriorInformation: newHouse.exteriorInformation,
+      residenceInformation: newHouse.residenceInformation,
       uid: `${Math.floor(newHouse.latitude)}${
         newHouse.latitude.toPrecision(8).split(".")[1]
       }${Math.floor(newHouse.longitude)}${
@@ -335,23 +340,129 @@ const Page: FC = () => {
             />
             <div />
             {isShownDetail ? (
-              <div>
-                <Label>点検項目</Label>
-                <CSVFileForm
-                  onChange={(text) => {
-                    const isValid = validateCheckListCSV(text)
-                    if (!isValid) return false
-                    setNewHouse({
-                      ...newHouse,
-                      checkListTemplate: csvToCheckTemplates(text),
-                    })
-                    return true
-                  }}
-                />
+              <div style={{ display: "flex", flexFlow: "column", gap: "1rem" }}>
+                <div>
+                  <Label>外構ユニット（カスタム設定時のみ）</Label>
+                  <div style={{ display: "flex", flexFlow: "column", gap: ".25rem" }}>
+                    {(newHouse.exteriorInformation ?? []).map((unit, i) => (
+                      <div key={unit.uid} style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
+                        <Input
+                          value={unit.name}
+                          onChange={({ target: { value } }) =>
+                            setNewHouse({
+                              ...newHouse,
+                              exteriorInformation: newHouse.exteriorInformation!.map((u, j) =>
+                                j === i ? { ...u, name: value } : u
+                              ),
+                            })
+                          }
+                          style={{ flex: 1 }}
+                        />
+                        <Button
+                          type="button"
+                          onClick={() =>
+                            setNewHouse({
+                              ...newHouse,
+                              exteriorInformation: newHouse.exteriorInformation!.filter((_, j) => j !== i),
+                            })
+                          }
+                        >
+                          削除
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const current = newHouse.exteriorInformation ?? []
+                        setNewHouse({
+                          ...newHouse,
+                          exteriorInformation: [
+                            ...current,
+                            { uid: `e${current.length + 1}`, name: "" },
+                          ],
+                        })
+                      }}
+                    >
+                      外構ユニット追加
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <Label>住棟ユニット</Label>
+                  <div style={{ display: "flex", flexFlow: "column", gap: ".25rem" }}>
+                    {(newHouse.residenceInformation ?? []).map((unit, i) => (
+                      <div key={unit.uid} style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
+                        <Input
+                          value={unit.name}
+                          onChange={({ target: { value } }) =>
+                            setNewHouse({
+                              ...newHouse,
+                              residenceInformation: newHouse.residenceInformation!.map((u, j) =>
+                                j === i ? { ...u, name: value } : u
+                              ),
+                            })
+                          }
+                          style={{ flex: 1 }}
+                        />
+                        <Button
+                          type="button"
+                          onClick={() =>
+                            setNewHouse({
+                              ...newHouse,
+                              residenceInformation: newHouse.residenceInformation!.filter((_, j) => j !== i),
+                            })
+                          }
+                        >
+                          削除
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const current = newHouse.residenceInformation ?? []
+                        setNewHouse({
+                          ...newHouse,
+                          residenceInformation: [
+                            ...current,
+                            { uid: `r${current.length + 1}`, name: "" },
+                          ],
+                        })
+                      }}
+                    >
+                      住棟ユニット追加
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <Label>点検項目</Label>
+                  <CSVFileForm
+                    onChange={(text) => {
+                      const isValid = validateCheckListCSV(text)
+                      if (!isValid) return false
+                      setNewHouse({
+                        ...newHouse,
+                        checkListTemplate: csvToCheckTemplates(text),
+                      })
+                      return true
+                    }}
+                  />
+                </div>
               </div>
             ) : (
               <div>
-                <Button type="button" onClick={() => setIsShownDetail(true)}>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setIsShownDetail(true)
+                    setNewHouse((prev) => ({
+                      ...prev,
+                      exteriorInformation: prev.exteriorInformation ?? OuteriorUnits.map((u) => ({ ...u })),
+                      residenceInformation: prev.residenceInformation ?? ResidenceUnits.map((u) => ({ ...u })),
+                    }))
+                  }}
+                >
                   詳細設定
                 </Button>
               </div>

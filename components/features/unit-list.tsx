@@ -16,66 +16,54 @@ export const UnitList: FC<{
       <UnitGroupWrapper>
         <h3>外構</h3>
         <UnitGroup>
-          {house.exteriorInformation ? (
-            <></>
-          ) : (
-            <>
-              {OuteriorUnits.map((unit) => (
-                <UnitBox
-                  house={house}
-                  key={unit.uid}
-                  unit={unit}
-                  unitCheck={(inspect?.payload as UnitCheck[])?.find(
-                    (uc) => uc.uid == unit.uid
-                  )}
-                  comments={comments}
-                  onChange={
-                    onChange &&
-                    ((uc) => {
-                      const payload = (inspect?.payload ?? []) as UnitCheck[]
-                      onChange?.([
-                        ...payload.filter((c) => c.uid != unit.uid),
-                        uc,
-                      ])
-                    })
-                  }
-                  onComment={onComment}
-                />
-              ))}
-            </>
-          )}
+          {(house.exteriorInformation ?? OuteriorUnits).map((unit) => (
+            <UnitBox
+              house={house}
+              key={unit.uid}
+              unit={unit}
+              unitCheck={(inspect?.payload as UnitCheck[])?.find(
+                (uc) => uc.uid == unit.uid
+              )}
+              comments={comments}
+              onChange={
+                onChange &&
+                ((uc) => {
+                  const payload = (inspect?.payload ?? []) as UnitCheck[]
+                  onChange?.([
+                    ...payload.filter((c) => c.uid != unit.uid),
+                    uc,
+                  ])
+                })
+              }
+              onComment={onComment}
+            />
+          ))}
         </UnitGroup>
       </UnitGroupWrapper>
       <UnitGroupWrapper>
         <h3>住棟</h3>
         <UnitGroup>
-          {house.exteriorInformation ? (
-            <></>
-          ) : (
-            <>
-              {ResidenceUnits.map((unit) => (
-                <UnitBox
-                  house={house}
-                  key={unit.uid}
-                  unit={unit}
-                  unitCheck={(inspect?.payload as UnitCheck[])?.find(
-                    (uc) => uc.uid == unit.uid
-                  )}
-                  comments={comments}
-                  onChange={
-                    onChange &&
-                    ((uc) => {
-                      const payload = (inspect?.payload ?? []) as UnitCheck[]
-                      onChange?.([
-                        ...payload.filter((c) => c.uid != unit.uid),
-                        uc,
-                      ])
-                    })
-                  }
-                />
-              ))}
-            </>
-          )}
+          {(house.residenceInformation ?? ResidenceUnits).map((unit) => (
+            <UnitBox
+              house={house}
+              key={unit.uid}
+              unit={unit}
+              unitCheck={(inspect?.payload as UnitCheck[])?.find(
+                (uc) => uc.uid == unit.uid
+              )}
+              comments={comments}
+              onChange={
+                onChange &&
+                ((uc) => {
+                  const payload = (inspect?.payload ?? []) as UnitCheck[]
+                  onChange?.([
+                    ...payload.filter((c) => c.uid != unit.uid),
+                    uc,
+                  ])
+                })
+              }
+            />
+          ))}
         </UnitGroup>
       </UnitGroupWrapper>
       <UnitGroupWrapper>

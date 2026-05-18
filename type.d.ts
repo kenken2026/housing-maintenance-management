@@ -17,6 +17,9 @@ type FloorInformation = {
   stepCount: number
 }[]
 
+type ExteriorInformation = Unit[]
+type ResidenceInformation = Unit[]
+
 type House = {
   id: number
   teamId: number
@@ -33,7 +36,8 @@ type House = {
   uid?: string
 
   floorInformation?: FloorInformation
-  exteriorInformation?: object
+  exteriorInformation?: ExteriorInformation
+  residenceInformation?: ResidenceInformation
   checkListTemplate?: CheckTemplate[]
 }
 
