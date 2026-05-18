@@ -4,6 +4,7 @@ import { commentModel } from "lib/models/comment"
 import { ImageFileForm } from "components/modules/image-file-form"
 import { MarkingMap } from "./marking-map"
 import { useLoadinfState } from "lib/store"
+import { DEFAULT_CENTER } from "lib/map"
 
 export const CommentForm: FC<{
   house: House
@@ -19,6 +20,10 @@ export const CommentForm: FC<{
     longitude: house.longitude,
     ...initialComment,
   })
+  const [isSettingPosition, setIsSettingPosition] = useState<boolean>(false)
+
+  const hasHousePosition = !!(house.latitude && house.longitude)
+  const showMap = hasHousePosition || isSettingPosition
 
   const handleSubmit: SubmitEventHandler = async (e) => {
     e.preventDefault()
@@ -43,15 +48,21 @@ export const CommentForm: FC<{
   return (
     <div>
       <Form onSubmit={handleSubmit}>
-        <MarkingMap
-          initialPosition={{ ...house }}
-          onChangePosition={(position) =>
-            setComment({
-              ...comment,
-              ...position,
-            })
-          }
-        />
+        {showMap ? (
+          <MarkingMap
+            initialPosition={hasHousePosition ? { ...house } : DEFAULT_CENTER}
+            onChangePosition={(position) =>
+              setComment({
+                ...comment,
+                ...position,
+              })
+            }
+          />
+        ) : (
+          <Button type="button" onClick={() => setIsSettingPosition(true)}>
+            位置を設定
+          </Button>
+        )}
         <Label>緯度</Label>
         <Input
           value={comment?.latitude ?? house.latitude}
