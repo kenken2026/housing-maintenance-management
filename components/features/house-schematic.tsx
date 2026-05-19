@@ -77,7 +77,7 @@ export const HouseSchematic: FC<{
                     stroke="#aaa"
                     strokeWidth={1}
                   />
-                  {isStair && (
+                  {isStair ? (
                     <>
                       <line
                         x1={x + 4}
@@ -97,6 +97,16 @@ export const HouseSchematic: FC<{
                         階段
                       </text>
                     </>
+                  ) : (
+                    <text
+                      x={x + CELL_W / 2}
+                      y={y + CELL_H / 2 + FONT_SIZE / 3}
+                      textAnchor="middle"
+                      fontSize={FONT_SIZE}
+                      fill="#555"
+                    >
+                      {`U${ci - fd.stepCount + 1}`}
+                    </text>
                   )}
                 </g>
               )
