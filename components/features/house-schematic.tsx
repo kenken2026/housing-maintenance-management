@@ -6,7 +6,6 @@ const LABEL_W = 28
 const FONT_SIZE = 10
 const GROUND_H = 8
 
-// Returns column indices that should be stairs (0-indexed, left-aligned)
 const stairColumns = (totalColumns: number, stepCount: number): Set<number> => {
   const indices = new Set<number>()
   for (let i = 0; i < stepCount; i++) {
@@ -20,7 +19,8 @@ export const HouseSchematic: FC<{
   roomCount: number
   stepCount: number
   floorInformation?: FloorInformation
-}> = ({ floorCount, roomCount, stepCount, floorInformation }) => {
+  onUnitClick?: (uid: string) => void
+}> = ({ floorCount, roomCount, stepCount, floorInformation, onUnitClick }) => {
   const floorData = floorInformation
     ? [...floorInformation].sort((a, b) => b.floor - a.floor)
     : Array.from({ length: floorCount }, (_, i) => ({
@@ -59,8 +59,15 @@ export const HouseSchematic: FC<{
             {Array.from({ length: totalColumns }, (_, ci) => {
               const isStair = stairs.has(ci)
               const x = LABEL_W + ci * CELL_W
+              const uid = isStair
+                ? `f${fd.floor - 1}s${ci}`
+                : `f${fd.floor - 1}r${ci - fd.stepCount}`
               return (
-                <g key={ci}>
+                <g
+                  key={ci}
+                  onClick={() => !isStair && onUnitClick?.(uid)}
+                  style={!isStair && onUnitClick ? { cursor: "pointer" } : undefined}
+                >
                   <rect
                     x={x}
                     y={y}

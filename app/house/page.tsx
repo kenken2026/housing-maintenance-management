@@ -25,6 +25,7 @@ const HousePage: FC = () => {
   const [inspects, setInspects] = useState<Inspect[]>()
   const [editingComment, setEditingComment] = useState<HouseComment>()
   const [selectedImage, setSelectedImage] = useState<string>()
+  const [openUnitTrigger, setOpenUnitTrigger] = useState<{ uid: string } | undefined>()
   const [isOpenCommentModal, setIsOpenComentModal] = useState<boolean>(false)
   const [isOpenImageModal, setIsOpenImageModal] = useState<boolean>(false)
   const { setLoadingMessage } = useLoadinfState()
@@ -318,12 +319,16 @@ const HousePage: FC = () => {
             </div>
           )}
           <h3>構造</h3>
-          <HouseSchematic {...house} />
+          <HouseSchematic
+            {...house}
+            onUnitClick={(uid) => setOpenUnitTrigger({ uid })}
+          />
           <h3>ユニット一覧</h3>
           <UnitList
             house={house}
             inspects={inspects}
             comments={comments}
+            openUnitTrigger={openUnitTrigger}
             onComment={(comment) => setComments([comment, ...comments])}
             onUnitPositionChange={async (uid, position) => {
               const unitPositions = { ...(house.unitPositions ?? {}) }

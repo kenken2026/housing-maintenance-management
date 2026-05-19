@@ -1,6 +1,6 @@
 import { Modal } from "components/elements/modal"
 import { OuteriorUnits, ResidenceUnits } from "lib/constants"
-import { ComponentProps, FC, useState } from "react"
+import { ComponentProps, FC, useEffect, useState } from "react"
 import { CheckList } from "./check-list"
 import { CommentForm } from "./comment-form"
 import { MarkingMap } from "./marking-map"
@@ -11,10 +11,11 @@ export const UnitList: FC<{
   inspect?: Inspect
   inspects?: Inspect[]
   comments?: HouseComment[]
+  openUnitTrigger?: { uid: string }
   onChange?(checkList: UnitCheck[]): void
   onComment?(comment: HouseComment): void
   onUnitPositionChange?(uid: string, position: Position | undefined): void
-}> = ({ house, inspect, inspects, comments, onChange, onComment, onUnitPositionChange }) => {
+}> = ({ house, inspect, inspects, comments, openUnitTrigger, onChange, onComment, onUnitPositionChange }) => {
   return (
     <>
       <UnitGroupWrapper>
@@ -30,6 +31,7 @@ export const UnitList: FC<{
               )}
               inspects={inspects}
               comments={comments}
+              openUnitTrigger={openUnitTrigger}
               onChange={
                 onChange &&
                 ((uc) => {
@@ -59,6 +61,7 @@ export const UnitList: FC<{
               )}
               inspects={inspects}
               comments={comments}
+              openUnitTrigger={openUnitTrigger}
               onChange={
                 onChange &&
                 ((uc) => {
@@ -101,6 +104,7 @@ export const UnitList: FC<{
                             )}
                             inspects={inspects}
                             comments={comments}
+                            openUnitTrigger={openUnitTrigger}
                             onChange={
                               onChange &&
                               ((uc) => {
@@ -130,6 +134,7 @@ export const UnitList: FC<{
                             )}
                             inspects={inspects}
                             comments={comments}
+                            openUnitTrigger={openUnitTrigger}
                             onChange={
                               onChange &&
                               ((uc) => {
@@ -175,6 +180,7 @@ export const UnitList: FC<{
                           )}
                           inspects={inspects}
                           comments={comments}
+                          openUnitTrigger={openUnitTrigger}
                           onChange={
                             onChange &&
                             ((uc) => {
@@ -202,6 +208,7 @@ export const UnitList: FC<{
                           )}
                           inspects={inspects}
                           comments={comments}
+                          openUnitTrigger={openUnitTrigger}
                           onChange={
                             onChange &&
                             ((uc) => {
@@ -263,11 +270,12 @@ const UnitBox: FC<
     inspect?: Inspect
     inspects?: Inspect[]
     comments?: HouseComment[]
+    openUnitTrigger?: { uid: string }
     onChange?(unitCheck: UnitCheck): void
     onComment?(comment: HouseComment): void
     onUnitPositionChange?(uid: string, position: Position | undefined): void
   }
-> = ({ house, unit, unitCheck, inspect, inspects, comments, onChange, onComment, onUnitPositionChange, ...props }) => {
+> = ({ house, unit, unitCheck, inspect, inspects, comments, openUnitTrigger, onChange, onComment, onUnitPositionChange, ...props }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isOpenCheckListModal, setIsOpenCheckListModal] = useState<boolean>(false)
   const [isSettingPosition, setIsSettingPosition] = useState<boolean>(false)
@@ -287,6 +295,14 @@ const UnitBox: FC<
     setPendingPosition(undefined)
     setIsOpenCheckListModal(true)
   }
+
+  useEffect(() => {
+    if (openUnitTrigger?.uid === unit.uid) {
+      setIsSettingPosition(false)
+      setPendingPosition(undefined)
+      setIsOpenCheckListModal(true)
+    }
+  }, [openUnitTrigger])
 
   const handleSavePosition = () => {
     if (pendingPosition) {
