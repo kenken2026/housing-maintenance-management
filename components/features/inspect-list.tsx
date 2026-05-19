@@ -1,6 +1,6 @@
 import { Button } from "components/elements/form"
 import { Modal } from "components/elements/modal"
-import { FC, useEffect, useState } from "react"
+import { FC, useState } from "react"
 import { InspectForm } from "./inspect-form"
 import { inspectModel } from "lib/models/inspect"
 import { isTauri } from "@tauri-apps/api/core"
@@ -86,17 +86,11 @@ const buildCSV = (house: House, inspect: Inspect): string => {
 
 export const InspectList: FC<{
   house: House
-}> = ({ house }) => {
+  inspects: Inspect[]
+  onUpdate(): Promise<void>
+}> = ({ house, inspects, onUpdate }) => {
   const [editingInspect, setEditingInspect] = useState<Inspect>()
   const [isOpenInspectModal, setIsOpenInspectModal] = useState<boolean>(false)
-  const [inspects, setInspects] = useState<Inspect[]>()
-  useEffect(() => {
-    const fetchInspects = async () => {
-      const inspects = await inspectModel().index({ houseId: house.id })
-      setInspects(inspects)
-    }
-    fetchInspects()
-  }, [house.id])
 
   const handleCSVExport = (inspect: Inspect) => async () => {
     const csv = buildCSV(house, inspect)
@@ -110,8 +104,7 @@ export const InspectList: FC<{
   }
   return (
     <>
-      {inspects && (
-        <div>
+      <div>
           <h3>点検履歴</h3>
           <div style={{ padding: ".5rem" }}>
             <table
@@ -186,10 +179,7 @@ export const InspectList: FC<{
                                 return
                             }
                             await inspectModel().delete(inspect.id)
-                            const inspects = await inspectModel().index({
-                              houseId: house.id,
-                            })
-                            setInspects(inspects)
+                            await onUpdate()
                           }}
                         >
                           削除
@@ -216,16 +206,12 @@ export const InspectList: FC<{
               house={house}
               inspect={editingInspect}
               onSave={async () => {
-                const inspects = await inspectModel().index({
-                  houseId: house.id,
-                })
-                setInspects(inspects)
+                await onUpdate()
                 setIsOpenInspectModal(false)
               }}
             />
           </Modal>
         </div>
-      )}
     </>
   )
 }

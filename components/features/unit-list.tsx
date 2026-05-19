@@ -9,11 +9,12 @@ import { Button } from "components/elements/form"
 export const UnitList: FC<{
   house: House
   inspect?: Inspect
+  inspects?: Inspect[]
   comments?: HouseComment[]
   onChange?(checkList: UnitCheck[]): void
   onComment?(comment: HouseComment): void
   onUnitPositionChange?(uid: string, position: Position | undefined): void
-}> = ({ house, inspect, comments, onChange, onComment, onUnitPositionChange }) => {
+}> = ({ house, inspect, inspects, comments, onChange, onComment, onUnitPositionChange }) => {
   return (
     <>
       <UnitGroupWrapper>
@@ -27,6 +28,7 @@ export const UnitList: FC<{
               unitCheck={(inspect?.payload as UnitCheck[])?.find(
                 (uc) => uc.uid == unit.uid
               )}
+              inspects={inspects}
               comments={comments}
               onChange={
                 onChange &&
@@ -55,6 +57,7 @@ export const UnitList: FC<{
               unitCheck={(inspect?.payload as UnitCheck[])?.find(
                 (uc) => uc.uid == unit.uid
               )}
+              inspects={inspects}
               comments={comments}
               onChange={
                 onChange &&
@@ -96,6 +99,7 @@ export const UnitList: FC<{
                             unitCheck={(inspect?.payload as UnitCheck[])?.find(
                               (uc) => uc.uid == `f${i}r${j}`
                             )}
+                            inspects={inspects}
                             comments={comments}
                             onChange={
                               onChange &&
@@ -124,6 +128,7 @@ export const UnitList: FC<{
                             unitCheck={(inspect?.payload as UnitCheck[])?.find(
                               (uc) => uc.uid == `f${i}s${j}`
                             )}
+                            inspects={inspects}
                             comments={comments}
                             onChange={
                               onChange &&
@@ -168,6 +173,7 @@ export const UnitList: FC<{
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}r${j}`
                           )}
+                          inspects={inspects}
                           comments={comments}
                           onChange={
                             onChange &&
@@ -194,6 +200,7 @@ export const UnitList: FC<{
                           unitCheck={(inspect?.payload as UnitCheck[])?.find(
                             (uc) => uc.uid == `f${i}s${j}`
                           )}
+                          inspects={inspects}
                           comments={comments}
                           onChange={
                             onChange &&
@@ -254,18 +261,26 @@ const UnitBox: FC<
     unit: Unit
     unitCheck?: UnitCheck
     inspect?: Inspect
+    inspects?: Inspect[]
     comments?: HouseComment[]
     onChange?(unitCheck: UnitCheck): void
     onComment?(comment: HouseComment): void
     onUnitPositionChange?(uid: string, position: Position | undefined): void
   }
-> = ({ house, unit, unitCheck, inspect, comments, onChange, onComment, onUnitPositionChange, ...props }) => {
+> = ({ house, unit, unitCheck, inspect, inspects, comments, onChange, onComment, onUnitPositionChange, ...props }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isOpenCheckListModal, setIsOpenCheckListModal] = useState<boolean>(false)
   const [isSettingPosition, setIsSettingPosition] = useState<boolean>(false)
   const [pendingPosition, setPendingPosition] = useState<Position | undefined>(undefined)
+  const [selectedImage, setSelectedImage] = useState<string | undefined>()
   const currentPosition = house.unitPositions?.[unit.uid]
   const unitComments = comments?.filter((c) => c.uid === unit.uid) ?? []
+  const unitInspects = inspects
+    ?.map((i) => ({
+      inspect: i,
+      unitCheck: (i.payload as UnitCheck[])?.find((uc) => uc.uid === unit.uid),
+    }))
+    .filter((x): x is { inspect: Inspect; unitCheck: UnitCheck } => !!x.unitCheck && x.unitCheck.checkList.length > 0)
 
   const handleOpenModal = () => {
     setIsSettingPosition(false)
@@ -368,33 +383,72 @@ const UnitBox: FC<
           onClose={() => setIsOpenCheckListModal(false)}
         >
           {positionSection}
+          {unitInspects && unitInspects.length > 0 && (
+            <div style={{ marginBottom: "1rem" }}>
+              <h4>点検リスト</h4>
+              {unitInspects.map(({ inspect: i, unitCheck: uc }) => (
+                <div key={i.id} style={{ marginBottom: ".75rem" }}>
+                  <div style={{ fontSize: ".75rem", color: "#888", marginBottom: ".25rem" }}>
+                    {new Date(i.createdAt).toLocaleDateString()}
+                    {i.description && <>&nbsp;{i.description}</>}
+                  </div>
+                  <table style={{ fontSize: ".75rem", width: "100%", borderCollapse: "collapse" }}>
+                    <tbody>
+                      {uc.checkList.filter((c) => c.rank).map((c) => (
+                        <tr key={c.id} style={{ borderTop: "solid 1px #eee" }}>
+                          <td style={{ padding: ".2rem .4rem" }}>{c.largeCategory}</td>
+                          <td style={{ padding: ".2rem .4rem" }}>{c.mediumCategory}</td>
+                          <td style={{ padding: ".2rem .4rem" }}>{c.part}</td>
+                          <td style={{ padding: ".2rem .4rem" }}>{c.detail}</td>
+                          <td style={{ padding: ".2rem .4rem", fontWeight: "bold" }}>{c.rank}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+          )}
+          {unitComments.some((c) => c.image) && (
+            <div style={{ marginBottom: "1rem" }}>
+              <h4>画像</h4>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem" }}>
+                {unitComments.filter((c) => c.image).map((c) => (
+                  <div
+                    key={c.id}
+                    aria-hidden="true"
+                    style={{
+                      backgroundImage: `url(${c.image})`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "contain",
+                      cursor: "pointer",
+                      height: "6rem",
+                      width: "6rem",
+                      border: "1px solid #ddd",
+                      borderRadius: ".25rem",
+                    }}
+                    onClick={() => setSelectedImage(c.image)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
           {unitComments.length > 0 && (
             <div style={{ marginBottom: "1rem" }}>
-              <h4>コメント一覧</h4>
+              <h4>コメント</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: ".5rem" }}>
                 {unitComments.map((comment) => (
                   <div
                     key={comment.id}
                     style={{
                       borderTop: "solid 1px #eee",
-                      display: "flex",
-                      gap: ".5rem",
                       paddingTop: ".5rem",
                     }}
                   >
-                    {comment.image && (
-                      <img
-                        src={comment.image}
-                        alt=""
-                        style={{ height: "4rem", objectFit: "contain", width: "4rem" }}
-                      />
-                    )}
-                    <div>
-                      <div style={{ fontSize: ".75rem", color: "#888" }}>
-                        {new Date(comment.createdAt).toLocaleDateString()}
-                      </div>
-                      <div>{comment.body}</div>
+                    <div style={{ fontSize: ".75rem", color: "#888" }}>
+                      {new Date(comment.createdAt).toLocaleDateString()}
                     </div>
+                    <div>{comment.body}</div>
                   </div>
                 ))}
               </div>
@@ -409,6 +463,23 @@ const UnitBox: FC<
               onComment?.({ ...comment })
             }}
           />
+          <Modal
+            isOpen={!!selectedImage}
+            onClose={() => setSelectedImage(undefined)}
+          >
+            <div
+              style={{
+                backgroundColor: "#333",
+                backgroundImage: `url(${selectedImage})`,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
+                minHeight: "80vh",
+                height: "100%",
+                width: "100%",
+              }}
+            />
+          </Modal>
         </Modal>
       )}
     </>

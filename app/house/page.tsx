@@ -14,6 +14,7 @@ import MultiMarkerMap from "components/features/multi-maker-map"
 import { HouseSchematic } from "components/features/house-schematic"
 import { isTauri } from "@tauri-apps/api/core"
 import { InspectList } from "components/features/inspect-list"
+import { inspectModel } from "lib/models/inspect"
 
 const HousePage: FC = () => {
   const { team } = useTeamState()
@@ -21,6 +22,7 @@ const HousePage: FC = () => {
   const id = Number(searchParams.get("id"))
   const [house, setHouse] = useState<House>()
   const [comments, setComments] = useState<HouseComment[]>()
+  const [inspects, setInspects] = useState<Inspect[]>()
   const [editingComment, setEditingComment] = useState<HouseComment>()
   const [selectedImage, setSelectedImage] = useState<string>()
   const [isOpenCommentModal, setIsOpenComentModal] = useState<boolean>(false)
@@ -35,8 +37,12 @@ const HousePage: FC = () => {
       }
       setLoadingMessage("データを読み込んでいます...")
       setHouse(house)
-      const comments = await commentModel().index({ houseId: house.id })
+      const [comments, inspects] = await Promise.all([
+        commentModel().index({ houseId: house.id }),
+        inspectModel().index({ houseId: house.id }),
+      ])
       setComments(comments)
+      setInspects(inspects)
       setLoadingMessage(undefined)
     }
     fetch()
@@ -133,7 +139,14 @@ const HousePage: FC = () => {
               </div>
             </div>
           </div>
-          <InspectList house={house} />
+          <InspectList
+            house={house}
+            inspects={inspects ?? []}
+            onUpdate={async () => {
+              const updated = await inspectModel().index({ houseId: house.id })
+              setInspects(updated)
+            }}
+          />
           {comments && (
             <div>
               <h3>記載事項</h3>
@@ -309,6 +322,7 @@ const HousePage: FC = () => {
           <h3>ユニット一覧</h3>
           <UnitList
             house={house}
+            inspects={inspects}
             comments={comments}
             onComment={(comment) => setComments([comment, ...comments])}
             onUnitPositionChange={async (uid, position) => {
