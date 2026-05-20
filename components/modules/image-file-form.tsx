@@ -42,7 +42,9 @@ export const ImageFileForm: FC<{
         }}
         onClick={() => fileInputRef.current.click()}
       >
-        {!base64Image && <p>画像を選択</p>}
+        {!base64Image && (
+          <p style={{ textDecoration: "underline" }}>画像を選択</p>
+        )}
       </div>
       <input
         type="file"
