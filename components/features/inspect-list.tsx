@@ -138,6 +138,27 @@ export const InspectList: FC<{
                     <td>{new Date(inspect.updatedAt).toLocaleString()}</td>
                     <td>
                       <div style={{ display: "flex", gap: ".5rem" }}>
+                        {inspect.status === "in_progress" && (
+                          <div
+                            aria-hidden={true}
+                            style={{
+                              color: "#963",
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                            }}
+                            onClick={async () => {
+                              if (isTauri()) {
+                                if (!(await ask("点検を完了にしてもよろしいですか？"))) return
+                              } else {
+                                if (!confirm("点検を完了にしてもよろしいですか？")) return
+                              }
+                              await inspectModel().update({ ...inspect, status: "completed" })
+                              await onUpdate()
+                            }}
+                          >
+                            完了
+                          </div>
+                        )}
                         <div
                           aria-hidden={true}
                           style={{
