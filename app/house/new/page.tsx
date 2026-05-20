@@ -15,6 +15,17 @@ import { CSVFileForm } from "components/modules/csv-file-form"
 import { hash } from "lib/text"
 import { OuteriorUnits, ResidenceUnits } from "lib/constants"
 
+const ORIENTATIONS = [
+  { label: "北 (0°)", value: 0 },
+  { label: "北東 (45°)", value: 45 },
+  { label: "東 (90°)", value: 90 },
+  { label: "南東 (135°)", value: 135 },
+  { label: "南 (180°)", value: 180 },
+  { label: "南西 (225°)", value: 225 },
+  { label: "西 (270°)", value: 270 },
+  { label: "北西 (315°)", value: 315 },
+]
+
 type NewHouseInput = {
   name: string
   altitude?: number
@@ -27,6 +38,7 @@ type NewHouseInput = {
   exteriorInformation?: ExteriorInformation
   residenceInformation?: ResidenceInformation
   checkListTemplate?: CheckTemplate[]
+  orientation?: number
 }
 
 const csvToCheckTemplates = (text: string): CheckTemplate[] => {
@@ -151,6 +163,7 @@ const Page: FC = () => {
       longitude: newHouse.longitude!,
       exteriorInformation: newHouse.exteriorInformation,
       residenceInformation: newHouse.residenceInformation,
+      orientation: newHouse.orientation,
       uid: `${Math.floor(newHouse.latitude!)}${
         newHouse.latitude!.toPrecision(8).split(".")[1]
       }${Math.floor(newHouse.longitude!)}${
@@ -338,6 +351,24 @@ const Page: FC = () => {
               }
               required
             />
+            <Label>建物の向き</Label>
+            <select
+              value={newHouse.orientation ?? ""}
+              onChange={({ target: { value } }) =>
+                setNewHouse({
+                  ...newHouse,
+                  orientation: value !== "" ? Number(value) : undefined,
+                })
+              }
+              style={{ padding: ".375rem .5rem", borderRadius: ".25rem", border: "1px solid #ccc", fontSize: "1rem" }}
+            >
+              <option value="">未設定</option>
+              {ORIENTATIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
             <div />
             {isShownDetail ? (
               <div style={{ display: "flex", flexFlow: "column", gap: "1rem" }}>

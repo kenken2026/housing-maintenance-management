@@ -84,6 +84,7 @@ const createTable = async (database: DBAdapter) => {
     exteriorInformation     JSON,
     checkListTemplate      JSON,
     unitPositions           JSON,
+    orientation             REAL,
 
     FOREIGN KEY (teamId) REFERENCES teams(id) ON DELETE CASCADE
     )`
@@ -91,6 +92,12 @@ const createTable = async (database: DBAdapter) => {
 
   try {
     await database.execute(`ALTER TABLE houses ADD COLUMN unitPositions JSON`)
+  } catch {
+    // column already exists
+  }
+
+  try {
+    await database.execute(`ALTER TABLE houses ADD COLUMN orientation REAL`)
   } catch {
     // column already exists
   }

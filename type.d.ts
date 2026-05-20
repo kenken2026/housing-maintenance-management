@@ -40,6 +40,7 @@ type House = {
   residenceInformation?: ResidenceInformation
   checkListTemplate?: CheckTemplate[]
   unitPositions?: Record<string, Position>
+  orientation?: number
 }
 
 type HouseComment = {
