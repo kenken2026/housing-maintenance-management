@@ -37,6 +37,7 @@ export const ImageFileForm: FC<{
           display: "flex",
           height: "50vh",
           justifyContent: "center",
+          maxHeight: "4rem",
           padding: "1rem",
         }}
         onClick={() => fileInputRef.current.click()}
