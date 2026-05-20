@@ -66,6 +66,7 @@ export const houseModel = () => {
       orientation,
       roomWidth,
       roomDepth,
+      unitPositions,
     }: {
       name: string
       description?: string
@@ -88,8 +89,8 @@ export const houseModel = () => {
     }): Promise<number> => {
       const result = await db.execute(
         `INSERT INTO houses (
-        name, description, latitude, longitude, altitude, uid, teamId, floorCount, roomCount, stepCount, floorInformation, exteriorInformation, residenceInformation, checkListTemplate, orientation, roomWidth, roomDepth
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        name, description, latitude, longitude, altitude, uid, teamId, floorCount, roomCount, stepCount, floorInformation, exteriorInformation, residenceInformation, checkListTemplate, orientation, roomWidth, roomDepth, unitPositions
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           name,
           description ?? null,
@@ -108,6 +109,7 @@ export const houseModel = () => {
           orientation ?? null,
           roomWidth ?? null,
           roomDepth ?? null,
+          unitPositions ? JSON.stringify(unitPositions) : null,
         ]
       )
       return result.lastInsertId

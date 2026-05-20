@@ -65,6 +65,29 @@ const csvToCheckTemplates = (text: string): CheckTemplate[] => {
   })
 }
 
+const buildUnitPositions = (
+  floorInformation: FloorInformation,
+  latitude: number,
+  longitude: number,
+  orientation: number,
+  roomWidth: number
+): Record<string, Position> => {
+  const rad = (orientation * Math.PI) / 180
+  const latPerMeter = 1 / 111000
+  const lonPerMeter = 1 / (111000 * Math.cos((latitude * Math.PI) / 180))
+  const positions: Record<string, Position> = {}
+  for (const fi of floorInformation) {
+    for (let roomIdx = 0; roomIdx < fi.roomCount; roomIdx++) {
+      const dist = roomIdx * roomWidth
+      positions[`f${fi.floor - 1}r${roomIdx}`] = {
+        latitude: latitude + dist * Math.cos(rad) * latPerMeter,
+        longitude: longitude + dist * Math.sin(rad) * lonPerMeter,
+      }
+    }
+  }
+  return positions
+}
+
 const buildFloorInformation = (
   floorCount: number,
   roomCount: number,
@@ -168,6 +191,16 @@ const Page: FC = () => {
       orientation: newHouse.orientation,
       roomWidth: newHouse.roomWidth,
       roomDepth: newHouse.roomDepth,
+      unitPositions:
+        newHouse.orientation !== undefined && newHouse.roomWidth
+          ? buildUnitPositions(
+              newHouse.floorInformation,
+              newHouse.latitude!,
+              newHouse.longitude!,
+              newHouse.orientation,
+              newHouse.roomWidth
+            )
+          : undefined,
       uid: `${Math.floor(newHouse.latitude!)}${
         newHouse.latitude!.toPrecision(8).split(".")[1]
       }${Math.floor(newHouse.longitude!)}${
