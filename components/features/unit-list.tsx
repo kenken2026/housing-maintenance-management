@@ -298,11 +298,13 @@ const UnitBox: FC<
 
   useEffect(() => {
     if (openUnitTrigger?.uid === unit.uid) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setIsSettingPosition(false)
       setPendingPosition(undefined)
       setIsOpenCheckListModal(true)
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
-  }, [openUnitTrigger])
+  }, [openUnitTrigger, unit.uid])
 
   const handleSavePosition = () => {
     if (pendingPosition) {

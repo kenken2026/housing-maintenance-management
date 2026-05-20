@@ -88,7 +88,6 @@ const Page: FC = () => {
       }
     }
     fetch()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newHouse.latitude, newHouse.longitude])
 
   const handleFloorCount = (count: number) => {
