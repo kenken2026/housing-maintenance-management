@@ -41,6 +41,8 @@ type House = {
   checkListTemplate?: CheckTemplate[]
   unitPositions?: Record<string, Position>
   orientation?: number
+  roomWidth?: number
+  roomDepth?: number
 }
 
 type HouseComment = {

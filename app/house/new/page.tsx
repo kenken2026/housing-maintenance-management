@@ -39,6 +39,8 @@ type NewHouseInput = {
   residenceInformation?: ResidenceInformation
   checkListTemplate?: CheckTemplate[]
   orientation?: number
+  roomWidth?: number
+  roomDepth?: number
 }
 
 const csvToCheckTemplates = (text: string): CheckTemplate[] => {
@@ -164,6 +166,8 @@ const Page: FC = () => {
       exteriorInformation: newHouse.exteriorInformation,
       residenceInformation: newHouse.residenceInformation,
       orientation: newHouse.orientation,
+      roomWidth: newHouse.roomWidth,
+      roomDepth: newHouse.roomDepth,
       uid: `${Math.floor(newHouse.latitude!)}${
         newHouse.latitude!.toPrecision(8).split(".")[1]
       }${Math.floor(newHouse.longitude!)}${
@@ -369,6 +373,28 @@ const Page: FC = () => {
                 </option>
               ))}
             </select>
+            <Label>部屋の幅 (m)</Label>
+            <Input
+              type="number"
+              placeholder="例: 3.6"
+              step="0.1"
+              min="0"
+              value={newHouse.roomWidth ?? ""}
+              onChange={({ target: { value } }) =>
+                setNewHouse({ ...newHouse, roomWidth: value ? Number(value) : undefined })
+              }
+            />
+            <Label>部屋の奥行き (m)</Label>
+            <Input
+              type="number"
+              placeholder="例: 4.5"
+              step="0.1"
+              min="0"
+              value={newHouse.roomDepth ?? ""}
+              onChange={({ target: { value } }) =>
+                setNewHouse({ ...newHouse, roomDepth: value ? Number(value) : undefined })
+              }
+            />
             <div />
             {isShownDetail ? (
               <div style={{ display: "flex", flexFlow: "column", gap: "1rem" }}>

@@ -64,6 +64,8 @@ export const houseModel = () => {
       residenceInformation,
       checkListTemplate,
       orientation,
+      roomWidth,
+      roomDepth,
     }: {
       name: string
       description?: string
@@ -81,11 +83,13 @@ export const houseModel = () => {
       checkListTemplate?: CheckTemplate[]
       unitPositions?: Record<string, Position>
       orientation?: number
+      roomWidth?: number
+      roomDepth?: number
     }): Promise<number> => {
       const result = await db.execute(
         `INSERT INTO houses (
-        name, description, latitude, longitude, altitude, uid, teamId, floorCount, roomCount, stepCount, floorInformation, exteriorInformation, residenceInformation, checkListTemplate, orientation
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        name, description, latitude, longitude, altitude, uid, teamId, floorCount, roomCount, stepCount, floorInformation, exteriorInformation, residenceInformation, checkListTemplate, orientation, roomWidth, roomDepth
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           name,
           description ?? null,
@@ -102,6 +106,8 @@ export const houseModel = () => {
           residenceInformation ? JSON.stringify(residenceInformation) : null,
           checkListTemplate ? JSON.stringify(checkListTemplate) : null,
           orientation ?? null,
+          roomWidth ?? null,
+          roomDepth ?? null,
         ]
       )
       return result.lastInsertId
