@@ -109,6 +109,8 @@ const Page: FC = () => {
     roomCount: 3,
     stepCount: 1,
     floorInformation: buildFloorInformation(3, 3, 1),
+    roomWidth: 6,
+    roomDepth: 10,
   })
   const [address, setAddress] = useState<string>("")
   const [isShownDetail, setIsShownDetail] = useState<boolean>(false)
