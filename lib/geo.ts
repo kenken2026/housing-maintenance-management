@@ -1,5 +1,19 @@
 import ky from "ky"
 
+export const offsetPosition = (
+  base: { latitude: number; longitude: number },
+  distanceMeters: number,
+  bearingDegrees: number
+): { latitude: number; longitude: number } => {
+  const rad = (bearingDegrees * Math.PI) / 180
+  const latPerMeter = 1 / 111000
+  const lonPerMeter = 1 / (111000 * Math.cos((base.latitude * Math.PI) / 180))
+  return {
+    latitude: base.latitude + distanceMeters * Math.cos(rad) * latPerMeter,
+    longitude: base.longitude + distanceMeters * Math.sin(rad) * lonPerMeter,
+  }
+}
+
 export const fetchAltitude = async ({
   longitude,
   latitude,

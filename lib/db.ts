@@ -49,6 +49,20 @@ export const initializeDB = async (): Promise<DBAdapter> => {
   return dbInstance
 }
 
+const addColumnIfMissing = async (
+  database: DBAdapter,
+  table: string,
+  column: string,
+  type: string
+): Promise<void> => {
+  try {
+    await database.execute(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (!message.toLowerCase().includes("duplicate column")) throw error
+  }
+}
+
 const createTable = async (database: DBAdapter) => {
   await database.execute(
     `CREATE TABLE IF NOT EXISTS teams(
@@ -92,29 +106,10 @@ const createTable = async (database: DBAdapter) => {
     )`
   )
 
-  try {
-    await database.execute(`ALTER TABLE houses ADD COLUMN unitPositions JSON`)
-  } catch {
-    // column already exists
-  }
-
-  try {
-    await database.execute(`ALTER TABLE houses ADD COLUMN orientation REAL`)
-  } catch {
-    // column already exists
-  }
-
-  try {
-    await database.execute(`ALTER TABLE houses ADD COLUMN roomWidth REAL`)
-  } catch {
-    // column already exists
-  }
-
-  try {
-    await database.execute(`ALTER TABLE houses ADD COLUMN roomDepth REAL`)
-  } catch {
-    // column already exists
-  }
+  await addColumnIfMissing(database, "houses", "unitPositions", "JSON")
+  await addColumnIfMissing(database, "houses", "orientation", "REAL")
+  await addColumnIfMissing(database, "houses", "roomWidth", "REAL")
+  await addColumnIfMissing(database, "houses", "roomDepth", "REAL")
 
   await database.execute(
     `CREATE TABLE IF NOT EXISTS inspects(

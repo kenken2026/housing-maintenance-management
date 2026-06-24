@@ -193,7 +193,7 @@ export const InspectList: FC<{
                           }}
                           onClick={async () => {
                             if (isTauri()) {
-                              if (await ask("点検を削除してもよろしいですか？"))
+                              if (!(await ask("点検を削除してもよろしいですか？")))
                                 return
                             } else {
                               if (!confirm("点検を削除してもよろしいですか？"))

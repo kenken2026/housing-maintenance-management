@@ -9,7 +9,7 @@ import { Button, Form, Input, Label } from "components/elements/form"
 import { MarkingMap } from "components/features/marking-map"
 import { houseModel } from "lib/models/house"
 import { DEFAULT_CENTER } from "lib/map"
-import { fetchAltitude, fetchPositionByAddress } from "lib/geo"
+import { fetchAltitude, fetchPositionByAddress, offsetPosition } from "lib/geo"
 import { HouseSchematic } from "components/features/house-schematic"
 import { CSVFileForm } from "components/modules/csv-file-form"
 import { hash } from "lib/text"
@@ -70,19 +70,23 @@ const buildUnitPositions = (
   latitude: number,
   longitude: number,
   orientation: number,
-  roomWidth: number
+  roomWidth: number,
+  roomDepth: number
 ): Record<string, Position> => {
-  const rad = (orientation * Math.PI) / 180
-  const latPerMeter = 1 / 111000
-  const lonPerMeter = 1 / (111000 * Math.cos((latitude * Math.PI) / 180))
+  const depthOffset = roomDepth / 2
   const positions: Record<string, Position> = {}
   for (const fi of floorInformation) {
     for (let roomIdx = 0; roomIdx < fi.roomCount; roomIdx++) {
-      const dist = roomIdx * roomWidth
-      positions[`f${fi.floor - 1}r${roomIdx}`] = {
-        latitude: latitude + dist * Math.cos(rad) * latPerMeter,
-        longitude: longitude + dist * Math.sin(rad) * lonPerMeter,
-      }
+      const alongWidth = offsetPosition(
+        { latitude, longitude },
+        roomIdx * roomWidth,
+        orientation
+      )
+      positions[`f${fi.floor - 1}r${roomIdx}`] = offsetPosition(
+        alongWidth,
+        depthOffset,
+        orientation + 90
+      )
     }
   }
   return positions
@@ -194,13 +198,14 @@ const Page: FC = () => {
       roomWidth: newHouse.roomWidth,
       roomDepth: newHouse.roomDepth,
       unitPositions:
-        newHouse.orientation !== undefined && newHouse.roomWidth
+        newHouse.orientation !== undefined && newHouse.roomWidth !== undefined
           ? buildUnitPositions(
               newHouse.floorInformation,
               newHouse.latitude!,
               newHouse.longitude!,
               newHouse.orientation,
-              newHouse.roomWidth
+              newHouse.roomWidth,
+              newHouse.roomDepth ?? 0
             )
           : undefined,
       uid: `${Math.floor(newHouse.latitude!)}${
