@@ -95,7 +95,7 @@ type Check = CheckTemplate & {
 
 type UnitCheck = { uid: string; checkList: Check[] }
 
-type Marker = { id: name; latitude: number; longitude: number; name: string }
+type Marker = { id: number | string; latitude: number; longitude: number; name: string }
 
 // Common
 

@@ -5,27 +5,13 @@ import { InspectForm } from "./inspect-form"
 import { inspectModel } from "lib/models/inspect"
 import { isTauri } from "@tauri-apps/api/core"
 import { ask } from "@tauri-apps/plugin-dialog"
-import { OuteriorUnits, ResidenceUnits } from "lib/constants"
+import { getUnitName } from "lib/units"
 
 const escapeCSV = (value: string | undefined): string => {
   const s = value ?? ""
   return s.includes(",") || s.includes('"') || s.includes("\n")
     ? `"${s.replace(/"/g, '""')}"`
     : s
-}
-
-const getUnitName = (uid: string): string => {
-  const exterior = OuteriorUnits.find((u) => u.uid === uid)
-  if (exterior) return exterior.name
-  const residence = ResidenceUnits.find((u) => u.uid === uid)
-  if (residence) return residence.name
-  const roomMatch = uid.match(/^f(\d+)r(\d+)$/)
-  if (roomMatch)
-    return `${parseInt(roomMatch[1]) + 1}階 部屋${parseInt(roomMatch[2]) + 1}`
-  const stairMatch = uid.match(/^f(\d+)s(\d+)$/)
-  if (stairMatch)
-    return `${parseInt(stairMatch[1]) + 1}階 階段${parseInt(stairMatch[2]) + 1}`
-  return uid
 }
 
 const buildCSV = (house: House, inspect: Inspect): string => {

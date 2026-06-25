@@ -22,8 +22,8 @@ import { ZoomDisplay } from "components/modules/zoom-display"
 const MultiMarkerMap: FC<
   ComponentProps<"div"> & {
     markers: Marker[]
-    hoveredMarkerId?: number
-    onMarkerClick: (args: { id: number }) => void
+    hoveredMarkerId?: number | string
+    onMarkerClick: (args: { id: number | string }) => void
   }
 > = ({ markers, hoveredMarkerId, style, onMarkerClick, ...props }) => {
   const mapRef = useRef<MapRef>(null)

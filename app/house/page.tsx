@@ -15,6 +15,7 @@ import { HouseSchematic } from "components/features/house-schematic"
 import { isTauri } from "@tauri-apps/api/core"
 import { InspectList } from "components/features/inspect-list"
 import { inspectModel } from "lib/models/inspect"
+import { UnitPositionsMap } from "components/features/unit-positions-map"
 
 const HousePage: FC = () => {
   const { team } = useTeamState()
@@ -323,6 +324,7 @@ const HousePage: FC = () => {
             {...house}
             onUnitClick={(uid) => setOpenUnitTrigger({ uid })}
           />
+          <UnitPositionsMap house={house} />
           <h3>ユニット一覧</h3>
           <UnitList
             house={house}
